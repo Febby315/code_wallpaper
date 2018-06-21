@@ -6,8 +6,8 @@ Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://j
 
 ### Demo
 
-懒加载+全屏+透明+滚屏 [ImageView](./ImageView/)
-壁纸 [wallpaper1](./wallpaper1/)
+1. 懒加载+全屏+透明+滚屏 [ImageView](./ImageView/)
+2. 壁纸 [wallpaper1](./wallpaper1/)
 
 ### Markdown
 
