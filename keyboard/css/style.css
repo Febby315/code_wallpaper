@@ -1,0 +1,198 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+}
+html,body {
+  line-height: 1.4;
+  border: 0;
+  width:100%;
+  height:100%;
+  color: #222;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 0.8em;
+  background: white url(http://dmauro.github.io/Keypress/img/bg_noise.png);
+}
+
+.keyboard {
+  display: table;
+  margin: auto;
+}
+.keyboard .note,
+.keyboard .message {
+  margin-top: 1em;
+  width: 175px;
+  font-size: 1em;
+  color: #555;
+}
+.keyboard section {
+  display: inline-grid;
+  margin-right: 15px;
+}
+.keyboard section:last-of-type {
+  margin-right: 0;
+}
+.keyboard .row {
+  height: 40px;
+  margin-bottom: 5px;
+}
+.keyboard .row:last-of-type {
+  margin-bottom: 0;
+}
+.keyboard .key,
+.keyboard .key_filler {
+  display: inline-block;
+  position: relative;
+  margin-right: 5px;
+  width: 40px;
+  height: 40px;
+}
+.keyboard .key:last-of-type,
+.keyboard .key_filler:last-of-type {
+  margin-right: 0;
+}
+.keyboard .key_filler {
+  pointer-events: none;
+}
+.keyboard .key {
+  border: 1px solid #aaa;
+  padding-top: 0.25em;
+  vertical-align: top;
+  color: #333;
+  text-align: center;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.2);
+  background: white;
+  background-image: -moz-linear-gradient(-90deg, white 0%, #e3e3e3 100%);
+  background-image: -webkit-linear-gradient(-90deg, white 0%, #e3e3e3 100%);
+  background-image: -o-linear-gradient(-90deg, white 0%, #e3e3e3 100%);
+  background-image: -ms-linear-gradient(-90deg, white 0%, #e3e3e3 100%);
+}
+.keyboard .key.pressed,
+.keyboard .key.shift_pressed {
+  -webkit-box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.2);
+  background: #f3f3f3;
+  background-image: -moz-linear-gradient(90deg, #f3f3f3 0%, #dddddd 100%);
+  background-image: -webkit-linear-gradient(90deg, #f3f3f3 0%, #dddddd 100%);
+  background-image: -o-linear-gradient(90deg, #f3f3f3 0%, #dddddd 100%);
+  background-image: -ms-linear-gradient(90deg, #f3f3f3 0%, #dddddd 100%);
+}
+.keyboard .key.pressed strong,
+.keyboard .key.shift_pressed strong {
+  color: #33bbff;
+}
+.keyboard .key.pressed .triangle:first-child.up,
+.keyboard .key.shift_pressed .triangle:first-child.up {
+  border-color: transparent transparent #33bbff transparent;
+}
+.keyboard .key.pressed .triangle:first-child.down,
+.keyboard .key.shift_pressed .triangle:first-child.down {
+  border-color: #33bbff transparent transparent transparent;
+}
+.keyboard .key.pressed .triangle:first-child.right,
+.keyboard .key.shift_pressed .triangle:first-child.right {
+  border-color: transparent transparent transparent #33bbff;
+}
+.keyboard .key.pressed .triangle:first-child.left,
+.keyboard .key.shift_pressed .triangle:first-child.left {
+  border-color: transparent #33bbff transparent transparent;
+}
+.keyboard .key.shift_pressed strong {
+  color: #333;
+}
+.keyboard .key.shift_pressed em {
+  color: #33bbff;
+}
+.keyboard .key.wide_1 {
+  width: 61px;
+}
+.keyboard .key.wide_2 {
+  width: 64px;
+}
+.keyboard .key.wide_3 {
+  width: 76px;
+}
+.keyboard .key.wide_4 {
+  width: 100px;
+}
+.keyboard .key.wide_5 {
+  width: 276px;
+}
+.keyboard .key.wide_6 {
+  width: 89px;
+}
+.keyboard .key.tall {
+  height: 85px;
+  line-height: 85px;
+}
+.keyboard .key.single {
+  font-size: 2em;
+}
+.keyboard .key strong {
+  font-weight: normal;
+}
+.keyboard .key .triangle {
+  margin: 8px auto;
+}
+.keyboard .key .triangle.up {
+  top: 2px;
+}
+.keyboard .key .triangle.down {
+  top: 5px;
+}
+.keyboard .key .triangle.left {
+  left: -2px;
+}
+.keyboard .key .triangle.right {
+  left: 2px;
+}
+.keyboard .key br + .triangle {
+  margin: 0 auto;
+}
+.keyboard .key span {
+  display: block;
+  position: absolute;
+  width: 100%;
+  padding: 0.2em 0.5em;
+  bottom: 0;
+  font-size: 0.8em;
+  text-align: center;
+}
+.keyboard .key span.right {
+  text-align: right;
+}
+.keyboard .key span.left {
+  text-align: left;
+}
+.keyboard .triangle {
+  position: relative;
+  width: 0px;
+  height: 0px;
+  border-style: solid;
+}
+.keyboard .triangle.up {
+  border-width: 0 8px 10px 8px;
+  border-color: transparent transparent #555555 transparent;
+}
+.keyboard .triangle.down {
+  border-width: 10px 8px 0 8px;
+  border-color: #555555 transparent transparent transparent;
+}
+.keyboard .triangle.right {
+  border-width: 8px 0 8px 10px;
+  border-color: transparent transparent transparent #555555;
+}
+.keyboard .triangle.left {
+  border-width: 8px 8px 10px 0;
+  border-color: transparent #555555 transparent transparent;
+}
