@@ -6,3 +6,4 @@
 - 壁纸 [wallpaper1](./wallpaper1/)
 - 键盘 [keyboard](./keyboard/)
 - 播放器 [player](./player/)
+- 字符画播放器 [player](./TXTplayer/)
