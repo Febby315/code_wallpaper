@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
@@ -8,10 +8,19 @@
     <title>字符画播放器 - Febby315</title>
     <script src="https://cdn.bootcss.com/vue/2.5.16/vue.min.js"></script>
     <style>
+        ::-webkit-scrollbar{
+            display: none;
+        }
+        html,body{
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            /* overflow: hidden; */
+        }
         #app {
             font-family: cursive;
             font-size: 12px;
-            line-height: 8px;
+            line-height: 6px;
         }
 
         #video {
@@ -109,7 +118,7 @@
                 var ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                v_app.content = toChars(ctx, canvas.width, canvas.height, 80);
+                v_app.content = toChars(ctx, canvas.width, canvas.height,document.body.clientWidth/12*2);
             }
         }
         var fileInput = document.querySelector("#file"),
