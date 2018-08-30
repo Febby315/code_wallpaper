@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>字符画播放器 - Febby315</title>
+    <script src="https://cdn.bootcss.com/vue/2.5.16/vue.min.js"></script>
+    <style>
+        #app {
+            font-family: cursive;
+            font-size: 12px;
+            line-height: 8px;
+        }
+
+        #video {
+            min-height: 160px;
+        }
+
+        #tool {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            text-align: right;
+        }
+
+        .help {
+            font-size: 16px;
+            line-height: 20px;
+        }
+    </style>
+</head>
+
+<body onselectstart="return false">
+    <div id="app" v-html="content"></div>
+    <div id="tool">
+        <video id="video"></video>
+        <br/>
+        <input id="file" type="file" hidden>
+        <button id="open" type="button" onclick="document.querySelector('#file').click()">选择视频</button>
+        <button id="play" type="button" onclick="video.paused?video.play():video.pause()">播放/暂停</button>
+    </div>
+    <script>
+        var v_app = new Vue({
+            el: "#app",
+            data: {
+                content:
+                    "<div class='help'>" +
+                    "字符画显示区域<br>" +
+                    "1.目录下start.bat文件<br/>" +
+                    "2.点击对话框中'允许'按钮<br/>" +
+                    "3.打开浏览器<br/>" +
+                    "4.地址栏输入http://127.0.0.1<br/>" +
+                    "5.按下回车<br/>" +
+                    "6.点击选择文件按钮,选择一个mp4文件<br/>" +
+                    "7.点击播放/暂停按钮" +
+                    "</div>"
+            },
+            mounted: function () {
+                this.$nextTick(function () {
+                    // 初始化结束后
+                });
+            },
+            methods: {}
+        });
+        var map = getCharsMap();
+        function getCharsMap() {
+            var chars = ['@', '#', '$', 'w', 'k', 'd', 't', 'i', ':', '.', '&nbsp;'];
+            var map = {}, step = ~~(256 / (chars.length - 1));
+            for (var i = 0; i < 256; i++) {
+                map[i] = chars[~~(i / step)];
+            };
+            return map;
+        }
+        function toChars(context, width, height, rowChars) {
+            var output = "",
+                imageData = context.getImageData(0, 0, width, height),
+                cols = width < rowChars ? width : rowChars,
+                char_h = width / cols, char_w = char_h,
+                rows = height / char_h;
+            //to get a block of pixiels average gray-value.
+            var getBlockGray = function (x, y, w, h) {
+                var sumGray = 0, pixels = w * h, data = imageData.data;
+                for (var row = 0; row < w; row++) {
+                    for (var col = 0; col < h; col++) {
+                        var cx = x + col, cy = y + row, // //current position x,current positon y
+                            index = (cy * imageData.width + cx) * 4, //current index in rgba data array  
+                            R = data[index], G = data[index + 1], B = data[index + 2],
+                            gray = ~~(R * 0.3 + G * 0.59 + B * 0.11);
+                        sumGray += gray;
+                    }
+                }
+                return ~~(sumGray / pixels);
+            };
+            for (var r = 0; r < rows; r++) {
+                for (var c = 0; c < cols; c++) {
+                    var pos_x = ~~(c * char_h), pos_y = ~~(r * char_h),
+                        avg = getBlockGray(pos_x, pos_y, ~~char_w, ~~char_h);
+                    output += map[avg];
+                }
+                output += '<br/>';
+            };
+            return output;
+        }
+        var captureImage = function () {
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            if (canvas.width) {
+                var ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                v_app.content = toChars(ctx, canvas.width, canvas.height, 80);
+            }
+        }
+        var fileInput = document.querySelector("#file"),
+            video = document.querySelector("#video"),
+            canvas = document.createElement("canvas");
+        fileInput.addEventListener("change", function (event) {
+            var file = fileInput.files[0];
+            document.querySelector("#video").src = URL.createObjectURL(file);
+        }, false);
+        video.onplay = function () {
+            window.timer = setInterval(function () {
+                captureImage(1)
+            }, 50);
+        }
+        video.onended = function () {
+            clearInterval(window.timer);
+        }
+    </script>
+</body>
+
+</html>
