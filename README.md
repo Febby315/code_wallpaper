@@ -7,3 +7,4 @@
 - 键盘 [keyboard](./keyboard/)
 - 播放器 [player](./player/)
 - 字符画播放器 [player](./TXTplayer/)
+- 背景水波纹 [ripples](./ripples/)
