@@ -5,19 +5,24 @@
     <meta charset="UTF-8" lang="zh-cn">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>水波纹(360Chrome浏览器壁纸)</title>
+    <link rel="stylesheet" href="css/style.css"> 
     <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery.ripples/0.5.3/jquery.ripples.min.js"></script>
+    <!-- <script src="https://raw.githubusercontent.com/aui/art-template/master/lib/template-web.js"></script> -->
+    <script src="lib/template-web.js"></script>
 </head>
 
 <body>
-    <div id="ripple" style="background-image:url(bj1.jpg);width:100%;height:100%;">
-        <input type="file" id="file" accept="image/*" style="left: 0;" />
-        <input type="button" id="pause" value="暂停" style="right: 0;"><br>
-        <input type="button" id="show" value="隐藏" style="right: 0;" /><br>
-        <input type="button" id="destroy" value="销毁" style="right: 0; display: none;" /><br>
+    <div id="ripple" style="background-image:url(http://p15.qhimg.com/bdr/__85/t0151ad4ac41239cb58.jpg); width:100%; height:100%;">
+        <input id="file" type="file" accept="image/*" /><br>
+        <input id="redanm" type="button" value="随机壁纸" /><br>
+        <input id="pause" type="button" value="暂停" /><br>
+        <input id="show" type="button" value="隐藏" /><br>
+        <input id="destroy" type="button" value="销毁" style="display: none;" /><br>
     </div>
+    <div id="epMenu" class="epMenu"></div>
+    <script src="config/config.js"></script>
     <script src="js/script.js"></script>
 </body>
 

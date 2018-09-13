@@ -4,12 +4,14 @@
 ::-webkit-scrollbar{ display: none; }
 html,body{ height:100%; width: 100%; margin: 0;padding: 0; overflow: auto;}
 body{ background: #000 var(--pic-view-bg) fixed; }
-input[type=file] { color: transparent; width: 69.33px; overflow: hidden; }
-#file,#pause,#show,#destroy{ display: none; width:69.33px; opacity: 0.5; position: fixed; }
+
+input{ position: fixed; right: 0; width:68px; opacity: 0.8; }
+input[type=file] { color: transparent; width: 68px; overflow: hidden; }
 /*右键菜单*/
-.epMenu{ 
+.epMenu{
+    display: none;
     width:120px; background:#f0f0f0; position:fixed; left:0; top:0; transform: translate(-50%, -100%); 
-    -moz-transform: translate(-50%, -100%); -webkit-transform: translate(-50%, -100%); -o-transform: translate(-50%, -100%);
+    -webkit-transform: translate(-50%, -100%); -moz-transform: translate(-50%, -100%); -o-transform: translate(-50%, -100%);
 }
 .epMenu a{ display:block; border-top:1px solid #e0e0e0; border-bottom:1px solid #fff; font-size:14px; text-align: center; }
 .epMenu a:hover{ background:#fff; }
