@@ -5,7 +5,7 @@
 html,body{ height:100%; width: 100%; margin: 0;padding: 0; overflow: auto;}
 body{ background: #000 var(--pic-view-bg) fixed; }
 
-input{ position: fixed; right: 0; width:68px; opacity: 0.8; }
+input{ display: none; position: fixed; right: 0; width:68px; opacity: 0.8; }
 input[type=file] { color: transparent; width: 68px; overflow: hidden; }
 /*右键菜单*/
 .epMenu{
