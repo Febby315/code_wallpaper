@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,9 @@
     <title>flac无损音乐播放</title>
     <script src="https://cdn.bootcss.com/howler/2.0.12/howler.min.js"></script>
 </head>
-<body onload="load()">
-    <script>
-        function load(){
-            var sound = new Howl({ src:["music/gbqq.flac"], autoplay: true, loop: true, volume: 0.5 });
-        };
-    </script>
+
+<body onload="play()">
+    <script src="js/music.js"></script>
 </body>
+
 </html>

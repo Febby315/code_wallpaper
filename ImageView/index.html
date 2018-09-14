@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
@@ -7,155 +7,63 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Image View By Febby315</title>
     <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
-    <style>
-        /* 全局变量 */
-        :root{
-            --pic-view-bg: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBvbHlnb24gcG9pbnRzPSIwLDAgMTAsMCAxMCwxMCAyMCwxMCAyMCwyMCAxMCwyMCAxMCwxMCAwLDEwIiBzdHlsZT0iZmlsbDpyZ2JhKDEzOCwxMzgsMTM4LDAuMyk7c3Ryb2tlLXdpZHRoOjAiLz48L3N2Zz4=");
-        }
-        /* 主页面全屏化、主背景网格化、全局滚动条隐藏 */
-        ::-webkit-scrollbar{ display: none; }
-        html{ background: #000 var(--pic-view-bg) fixed; }
-        html,body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: auto;
-        }
-
-        /* 滚屏 */
-
-        .fullpage {
-            overflow: hidden;
-        }
-        .fullpage .page {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        /* 图片视图器 */
-        .pic-view {
-            background: #000 var(--pic-view-bg);
-            width: 100%;
-            height: 100%;
-        }
-        /* 图片水平垂直居中 */
-        .pic-view img {
-            max-height: 100%;
-            max-width: 100%;
-            position: relative;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        
-        /* 懒加载 */
-        /* 自定义样式 */
-    </style>
-    <script src="js/utils/fullscreen.js"></script>
+    <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body class="fullpage">
     <div class="page">
         <div class="pic-view" style="background-color:rgba(0,0,0,0)">
-            <img data-src="./images/0.png" />
+            <img data-src="img/0.png" />
         </div>
     </div>
     <div class="page">
         <div class="pic-view" style="background-color:rgba(255,255,255,0.5)">
-            <img data-src="./images/1.png" />
+            <img data-src="img/1.png" />
         </div>
     </div>
     <div class="page">
         <div class="pic-view" style="background-color:rgba(255,0,0,0.5)">
-            <img data-src="./images/2.png" />
+            <img data-src="img/2.png" />
         </div>
     </div>
     <div class="page">
         <div class="pic-view" style="background-color:rgba(255,128,0,0.5)">
-            <img data-src="./images/3.png" />
+            <img data-src="img/3.png" />
         </div>
     </div>
     <div class="page">
         <div class="pic-view" style="background-color:rgba(255,255,0,0.5)">
-            <img data-src="./images/4.png" />
+            <img data-src="img/4.png" />
         </div>
     </div>
     <div class="page">
         <div class="pic-view" style="background-color:rgba(0,255,0,0.5)">
-            <img data-src="./images/5.png" />
+            <img data-src="img/5.png" />
         </div>
     </div>
     <div class="page">
         <div class="pic-view" style="background-color:rgba(0,255,255,0.5)">
-            <img data-src="./images/6.png" />
+            <img data-src="img/6.png" />
         </div>
     </div>
     <div class="page">
         <div class="pic-view" style="background-color:rgba(0,0,255,0.5)">
-            <img data-src="./images/7.png" />
+            <img data-src="img/7.png" />
         </div>
     </div>
     <div class="page">
         <div class="pic-view" style="background-color:rgba(255,0,255,0.5)">
-            <img data-src="./images/8.png" />
+            <img data-src="img/8.png" />
         </div>
     </div>
     <div class="page">
         <div class="pic-view" style="background-color:rgba(0,0,0,0.5)">
-            <img data-src="./images/9.png" />
+            <img data-src="img/9.png" />
         </div>
     </div>
     <div id="iframeView"></div>
-    <script>
-        function fullPage(delta, eh) {
-            //$(ele).animate({top:-eh});
-            var tempSpend = 0, tempCurrH = 0;
-            var timer = setInterval(function () {
-                tempSpend = tempCurrH + tempSpend > eh ? eh - tempCurrH : tempSpend;
-                tempCurrH += tempSpend;
-                this.scrollTop += delta > 0 ? tempSpend : -tempSpend;
-                tempCurrH >= eh ? clearInterval(timer) : tempSpend += 2;
-            }.bind(this), 20);
-        }
-        $(document).ready(function () {
-            //滚动事件
-            $(".fullpage").on("mousewheel DOMMouseScroll", function (e) {
-                var delta = -e.originalEvent.wheelDelta || e.originalEvent.detail;
-                var eh = this.clientHeight,ew = this.clientWidth;
-                this.scrollTop += delta > 0 ? eh : -eh;   //无动画滚屏
-                // fullPage.call(this,delta,eh);  //缓慢动画滚屏
-            });
-            //判断元素是否在视野内
-            function isWithinView($el) {
-                var winW = $(window).height(), winH = $(window).height();   //获取窗口宽度 //获取窗口高度
-                var scrollW = $(window).scrollLeft(), scrollH = $(window).scrollTop();  //获取窗口滚动宽度 //获取窗口滚动高度
-                var left = $el.offset().left, top = $el.offset().top;   //获取元素距离窗口左边界偏移量 //获取元素距离窗口顶边界偏移量
-                return left < winW + scrollW && top < scrollH + winH;   //在可视范围内
-            }
-            //图片懒加载
-            function lazyload() {
-                //检查包含data-src而不包含src属性的img元素
-                $('img[data-src]:not([src])').each(function () {
-                    //判断图片未被加载且在可视区时加载图片并标记为已加载
-                    var $img = $(this);
-                    !$img.prop('isLoaded') && isWithinView($img) ? $img.attr('src', $img.attr('data-src')).prop('isLoaded', true) : null;
-                });
-            }
-            //懒加载事件监听
-            lazyload();
-            $("body").on("scroll",lazyload);
-            $(window).on("resize",lazyload);
-            //全屏
-            $(".pic-view").on("click",function(){
-                fullscreen(this);
-                //fullscreen("iframeView",this.innerHTML);
-            });
-        });
-    </script>
+    <script src="js/utils/fullscreen.js"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>
