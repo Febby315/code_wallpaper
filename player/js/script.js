@@ -12,7 +12,7 @@ $(document).ready(function () {
             rtmp:"rtmp://live.hkstv.hk.lxdns.com/live/hks",
 
             type:"application/x-mpegURL",
-            url: "rtmp://live.hkstv.hk.lxdns.com/live/hks",
+            url: "http://202.107.186.137:5001/nn_live.m3u8?id=hunantvm",
         },
         mounted:function(){
             this.$nextTick(function(){
