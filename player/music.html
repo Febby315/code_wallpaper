@@ -7,9 +7,18 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>flac无损音乐播放</title>
     <script src="https://cdn.bootcss.com/howler/2.0.12/howler.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.5.16/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/aurora.js/0.4.2/aurora.min.js"></script>
+    <script src="https://cdn.bootcss.com/aurora.js-flac/0.2.1/flac.min.js"></script>
+    
 </head>
 
-<body onload="play()">
+<body>
+    <div id="app">
+        <button @click="sound.play()">播放</button>
+        <button @click="sound.pause()">暂停</button>
+        <button @click="sound.stop()">停止</button>
+    </div>
     <script src="js/music.js"></script>
 </body>
 
