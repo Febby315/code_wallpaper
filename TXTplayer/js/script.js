@@ -4,40 +4,39 @@ var v_app = new Vue({
     data: {
         content:
             "<div class='help'>" +
-            "字符画显示区域<br>" +
-            "1.目录下start.bat文件<br/>" +
-            "2.点击对话框中'允许'按钮<br/>" +
-            "3.打开浏览器<br/>" +
-            "4.地址栏输入http://127.0.0.1<br/>" +
-            "5.按下<span>回车</span><br/>" +
-            "6.点击选择文件按钮,选择一个mp4文件<br/>" +
-            "7.点击播放/暂停按钮" +
+                "字符画显示区域<br>" +
+                "1.目录下start.bat文件<br/>" +
+                "2.点击对话框中'允许'按钮<br/>" +
+                "3.打开浏览器<br/>" +
+                "4.地址栏输入http://127.0.0.1<br/>" +
+                "5.按下<span>回车</span><br/>" +
+                "6.点击选择文件按钮,选择一个mp4文件<br/>" +
+                "7.点击播放/暂停按钮" +
             "</div>"
     },
     mounted: function () {
-        this.$nextTick(function () {
-            // 初始化结束后
-        });
+        // 初始化结束后
+        this.$nextTick(function () { });
     },
     methods: {}
 });
 // 配置灰度字符映射表
 var charMap = getCharsMap();
 function getCharsMap() {
-    var map = {}, chars = ['@', '$', 'w', 'k', 'd', 't', 'i', ':', '·', '&nbsp;'];
-    var step = ~~(256/(chars.length-1));  //映射步长=最大字符长度/映射字符长度
+    var map = {}, chars = ['&nbsp;', '·', ':', 'i', 't', 'd', 'k', 'w', '$', '@'];
+    var step = parseInt(256/(chars.length-1));  //映射步长=最大字符长度/映射字符长度
     for (var i = 0; i < 256; i++) {
-        map[i] = chars[~~(i / step)];
+        map[i] = chars[parseInt(i / step)];
     };
     return map;
 }
 // 图像转字符画
 function toChars(ctx, width, height, rowChars) {
-    var fontSize = 7||~~($("#app").css("font-size").replace("px","")), lineHeight = 15||~~($("#app").css("line-height").replace("px",""));// 获取容器字体大小&行高
+    var fontSize = 7||parseInt($("#app").css("font-size").replace("px","")), lineHeight = 15||parseInt($("#app").css("line-height").replace("px",""));// 获取容器字体大小&行高
     var videoScale = width/height;//判断视频方向 >1宽屏 =1方屏 <1窄屏
     var screenScale = $(window).width()/$(window).height();//判断屏幕方向 >1宽屏 =1方屏 <1窄屏
     // var zoomScale = screenScale>videoScale ? height/$(window).height()/lineHeight : width/$(window).width()/fontSize; //获取视频填充缩放比=屏幕宽高比>视频宽高比?高度缩放比:挎包都缩放比
-    // var cs = ~~(width*zoomScale), rs = ~~(height*zoomScale) // 计算字符画宽高
+    // var cs = parseInt(width*zoomScale), rs = parseInt(height*zoomScale) // 计算字符画宽高
     // var cw = width/cs, ch = height/rs;
     // console.log($(window).width(),$(window).height(),$(window).width(),$(window).height());
     // console.log("视频宽高比:%s\n屏幕宽高比:%s\n视频缩放比:%s\n字符画宽度:%s\n字符画高度:%s\n灰度采集块宽度:%s\n灰度采集块高度:%s\n容器字体大小:%s\n容器字体行号:%s",videoScale, screenScale, zoomScale, cs, rs, cw, ch,fontSize,lineHeight);
@@ -56,17 +55,17 @@ function toChars(ctx, width, height, rowChars) {
                 var cx = x + col, cy = y + row, // //current position x,current positon y
                     index = (cy * image.width + cx) * 4, //current index in rgba data array
                     R = data[index]||128, G = data[index + 1]||128, B = data[index + 2]||128,
-                    gray = ~~(0.5*R + 0.3*G + 0.2*B); //类似于PS中的RGB通道根据权重计算灰度
+                    gray = (R*30 + G*59 + B*11 + 50) / 100; //类似于PS中的RGB通道根据权重计算灰度
                 sumGray += gray;
             }
         }
-        return ~~(sumGray / pixels);
+        return parseInt(sumGray / pixels);
     };
     // 遍历每个字符画像素获取灰度值映射字符追加至字符画帧数据
     for (var r = 0; r < rows; r++) {
         for (var c = 0; c < cols; c++) {
-            var avg = getBlockGray( ~~(c * char_h), ~~(r * char_h) , ~~char_w, ~~char_h);   //获取灰度均值
-            frame += charMap[avg];
+            var avgGray = getBlockGray( parseInt(c * char_h), parseInt(r * char_h) , parseInt(char_w), parseInt(char_h));   //获取灰度均值
+            frame += charMap[avgGray];
         }
         frame += '<br/>\n';
     };
@@ -80,11 +79,11 @@ var captureImage = function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);   //清除画布
         ctx.drawImage($video[0], 0, 0, canvas.width, canvas.height);   //将视频当前帧画面绘制至画布
         v_app.content = toChars(ctx, canvas.width, canvas.height, document.body.clientWidth/12*2);  //将画布图像转换为字符画
-        //输出到console
-        v_app.$nextTick(function () {
-            console.clear();
-            console.error("%c%s","font-family: Courier New; font-size: 12px;line-height:8px;",$("#app").text());
-        });
+        // //输出到console
+        // v_app.$nextTick(function () {
+        //     console.clear();
+        //     console.error("%c%s","font-family: Courier New; font-size: 12px;line-height:8px;",$("#app").text());
+        // });
     }
 }
 // 开始位置
@@ -95,7 +94,6 @@ $fileInput.on("change",function(){
     window.timer ? clearInterval(window.timer) : null;
     $video.attr("src",URL.createObjectURL(this.files[0]));
 });
-
 $video.on("play",function(){
     // 定时捕获画面并绘制字符画
     window.timer = setInterval(function () {
