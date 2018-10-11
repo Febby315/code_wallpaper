@@ -11,14 +11,15 @@
     <link href="css/style.css" rel="stylesheet">
 </head>
 
-<!-- onselectstart="return false" -->
-<body >
-    <div id="app" v-html="content"></div>
+<body onselectstart="return false">
+    <div id="app">
+        <div id="view" v-html="content"></div>
+    </div>
     <div id="tool">
-        <video id="video"></video><br/>
         <input id="file" type="file" hidden>
-        <button id="open" type="button" onclick="document.querySelector('#file').click()">选择视频</button>
-        <button id="play" type="button" onclick="video.paused?video.play():video.pause()">播放/暂停</button>
+        <video id="video"></video><br/>
+        <button type="button" onclick="$('#file').click()">选择视频</button>
+        <button type="button" onclick="video.paused?video.play():video.pause()">播放/暂停</button>
     </div>
     <script src="js/script.js"></script>
 </body>
