@@ -9,7 +9,6 @@ $(function(){
                     "1.点击选择文件按钮,选择一个视频文件<br/>" +
                     "2.点击播放/暂停按钮" +
                 "</div>",
-            videosrc:"",
             fileInput: document.getElementById("file"),
             video: document.getElementById("video"),
             canvas: document.createElement("canvas"),
@@ -70,7 +69,7 @@ $(function(){
                 $(_this.video).on("play",function(){
                     window.timer = setInterval(function () {
                         _this.captureImage(_this.canvas.getContext('2d')); // 定时捕获画布画面并绘制字符画
-                    }, 25);// 1000/25=40fps
+                    }, 34);// 1000/34=29.41fps
                 });
                 // 暂停/结束
                 $(_this.video).on("pause ended",function(){
