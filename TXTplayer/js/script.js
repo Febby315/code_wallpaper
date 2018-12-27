@@ -1,6 +1,6 @@
 $(function(){
     // 利用vue虚拟DOM技术加速DOM节点数据渲染
-    let v_app = new Vue({
+    var v_app =window.v_app= new Vue({
         el: "#app",
         data: {
             content: null,
@@ -58,9 +58,9 @@ $(function(){
                 });
                 // 视频源meta加载后
                 $(_this.video).on("loadedmetadata",function(){
-                    _this.vw = _this.video.videoWidth;
-                    _this.vh = _this.video.videoHeight;
-                    _this.canvas.width = _this.vw; _this.canvas.height = _this.vh;// 更新画布大小
+                    let vw =_this.vw= _this.video.videoWidth, vh =_this.vh= _this.video.videoHeight;
+                    _this.canvas.width = vw/_this.sw>0.2?_this.sw/5:vw;// 更新画布大小
+                    _this.canvas.height = vh*_this.canvas.width/vw;
                 });
                 // 开始播放
                 $(_this.video).on("play",function(){
@@ -72,9 +72,9 @@ $(function(){
                     },1000);
                 });
                 // 暂停/结束
-                $(_this.video).on("pause ended",function(){
+                $(_this.video).on("pause ended",function(e){
+                    e.type=="ended" ? _this.content=null : null;
                     clearInterval(window.timer);// 视频暂停或结束停止定时器
-                    _this.content = null;
                     setTimeout(function (){
                         $("#tool").show();// 1秒后还原工具栏
                     },1000);
@@ -83,12 +83,12 @@ $(function(){
         },
         methods: {
             // 计算一个像素区域的平均灰度值和灰度映射字符及RGB值对象
-            getAvgGray(offset_x, offset_y, w, h,vw,vh, imgDate) {
+            getAvgGray(offset_x, offset_y, w, h,cw,ch, imgDate) {
                 let pixels=w*h, R=0, G=0, B=0;// 总像素数,默认RGB色
                 let sumGray=0, sumR=0, sumG=0, sumB=0;// 初始化区域总灰度,
                 for (let i=0; i < h; i++) {
                     for (let j=0; j < w; j++){
-                        let cy = offset_y+i, cx = offset_x+j, idx = (cy*vw+cx)*4;// 当前像素坐标位置(原点:左上角)及起始指针位置(每像素由rgba数据组成)
+                        let py = offset_y+i, px = offset_x+j, idx = (py*cw+px)*4;// 当前像素坐标位置(原点:左上角)及起始指针位置(每像素由rgba数据组成)
                         R = imgDate[idx]||R, G = imgDate[idx+1]||G, B = imgDate[idx+2]||B;// 获取当前像素RGB值,无效值则取上次记录值或0
                         sumGray+=(R*30 + G*59 + B*11 + 50); sumR+=R; sumG+=G; sumB+=B;// 类似于PS中的RGB通道根据权重计算灰度
                     }
@@ -103,20 +103,20 @@ $(function(){
                 };
             },
             // 图像转字符画
-            toChars(ctx,vw,vh) {
+            toChars(ctx, cw, ch) {
                 let _this = this;
-                let spanTempFn = _this.spanTempFn, hasColor = _this.hasColor ,imgDate = ctx.getImageData(0, 0, vw, vh).data;// 字符画帧数据,当前画布图像数据
+                let spanTempFn = _this.spanTempFn, hasColor = _this.hasColor ,imgDate = ctx.getImageData(0, 0, cw, ch).data;// 字符画帧数据,当前画布图像数据
                 let rows, cols, char_w, char_h;// 字符画行数(高度)、字符画列数(宽度)、灰度采集块宽度、灰度采集块高度
                 // 根据视频、屏幕宽高比比值决定通过高度自适应或宽度自适应获得字符画宽度或高度
-                _this.screenScale>_this.videoScale ? rows=_this.maxCols>vh?vh:_this.maxCols : cols=_this.maxRows>vw?vw:_this.maxRows
-                char_w=char_h=rows ? vh/rows : vw/cols;// 灰度采集块宽高 = 视频高度/字符画高度||视频宽度/字符画宽度
-                rows ? cols=vw/char_w : rows=vh/char_h;// 字符画高度存在时计算字符画宽度否则计算字符画高度
+                _this.screenScale>_this.videoScale ? rows=_this.maxCols>ch?ch:_this.maxCols : cols=_this.maxRows>cw?cw:_this.maxRows
+                char_w=char_h=rows ? ch/rows : cw/cols;// 灰度采集块宽高 = 视频高度/字符画高度||视频宽度/字符画宽度
+                rows ? cols=cw/char_w : rows=ch/char_h;// 字符画高度存在时计算字符画宽度否则计算字符画高度
                 // 遍历每个字符画像素获取灰度值映射字符追加至字符画帧数据
                 let frameRows = [];
                 for (let r = 0; r < rows; r++) {
                     let frameCols = [];
                     for (let c = 0; c < cols; c++) {
-                        let op = _this.getAvgGray(~~(char_w*c), ~~(char_h*r) , ~~(char_w), ~~(char_h),vw,vh, imgDate);// 获取灰度均值
+                        let op = _this.getAvgGray(~~(char_w*c), ~~(char_h*r) , ~~(char_w), ~~(char_h), cw, ch, imgDate);// 获取灰度均值
                         frameCols.push(hasColor ? spanTempFn(op) : op.T);// 获取灰度映射字符追加入帧(仅灰度):获取灰度映射字符追加入帧(含色彩,较消耗性能)
                     }
                     frameRows.push(frameCols.join(""));
@@ -125,10 +125,11 @@ $(function(){
             },
             // 捕获视频当前帧画面并转化为字符画帧数据
             captureImage (ctx) {
-                let vw = this.vw, vh = this.vh;
-                ctx.clearRect(0, 0, vw, vh); // 清除画布
-                ctx.drawImage(this.video, 0, 0, vw, vh);// 将视频当前帧画面绘制至画布
-                this.content = this.toChars(ctx,vw,vh);// 将画布图像数据转换为字符画
+                // TODO canvas 双缓冲减少卡顿
+                let cw = this.canvas.width, ch = this.canvas.height;
+                ctx.clearRect(0, 0, cw, ch); // 清除画布
+                ctx.drawImage(this.video, 0, 0, cw, ch);// 将视频当前帧画面绘制至画布
+                this.content = this.toChars(ctx, cw, ch);// 将画布图像数据转换为字符画
             }
         }
     });

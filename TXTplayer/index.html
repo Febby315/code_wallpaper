@@ -13,14 +13,14 @@
 </head>
 
 <body onselectstart="return false">
-    <div id="app">
-        <div id="view" v-html="content"></div>
-    </div>
     <div id="tool">
         <input id="file" type="file" hidden>
         <video id="video" src="video/v.mp4"></video><br/>
         <button type="button" onclick="javascript:$('#file').click();">选择视频</button>
         <button type="button" onclick="javascript:video.paused?video.play():video.pause();">播放/暂停</button>
+    </div>
+    <div id="app">
+        <div id="view" v-html="content"></div>
     </div>
     <script src="js/script.js"></script>
 </body>
