@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>字符画播放器 - Febby315</title>
     <script src="https://lib.baomitu.com/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://lib.baomitu.com/stats.js/16/Stats.min.js"></script>
     <script src="https://lib.baomitu.com/vue/2.5.16/vue.min.js"></script>
     <script src="https://lib.baomitu.com/dot/1.1.2/doT.min.js"></script>
     <link href="css/style.css" rel="stylesheet">
@@ -18,7 +19,9 @@
         <video id="video" src="video/v.mp4"></video><br/>
         <button type="button" onclick="javascript:$('#file').click();">选择视频</button>
         <button type="button" onclick="javascript:video.paused?video.play():video.pause();">播放/暂停</button>
+        <button type="button" onclick="javascript:v_app.playCacheFrame();">播放缓存</button>
     </div>
+    <div id="cache"></div>
     <div id="app">
         <div id="view" v-html="content"></div>
     </div>
