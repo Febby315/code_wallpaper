@@ -1,11 +1,3 @@
-window.RAF = window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame ||
-    window.oRequestAnimationFrame ||
-    window.msRequestAnimationFrame ||
-    function (callback) {
-        window.setTimeout(callback, 17);
-    };
 $(function(){
     // 利用vue虚拟DOM技术加速DOM节点数据渲染
     var v_app =window.v_app= new Vue({
@@ -15,16 +7,19 @@ $(function(){
             fileInput: document.getElementById("file"),
             video: document.getElementById("video"),
             canvas: document.createElement("canvas"),
-            stats: new Stats(),
-            cacheFrame:[],//缓存画面
+            showStats: true,//显示统计信息
+            stats: new Stats(),// fps、读写速度、内存占用等数据统计展示
+            enableCache: true,// 启用缓存
+            cacheFrame:[],// 缓存画面
+            enableColor: false,// 启用输出色彩
+            spanTempFn : doT.template('<span style="color:rgb({{=it.R}},{{=it.G}},{{=it.B}});">{{=it.T}}</span>'),//彩色字符画像素模板
+            fps: 144,// fps(流畅度)
             fontSize: 7||~~($("#view").css("font-size").replace("px","")), 
             lineHeight: 8||~~($("#view").css("line-height").replace("px","")),// 获取容器字体大小&行高
-            chars: ['&nbsp;', '·', ':', 'i', 't', 'd', 'k', 'w', '$', '@'],
-            sw: $(window).width(), sh: $(window).height(),// 获取初始屏幕宽高
+            chars: ['&nbsp;', '·', ':', 'i', 't', 'd', 'k', 'w', '$', '@'],// 映射字符集
+            sw: $(window).width(), sh: $(window).height(),// 存储屏幕宽高(含初始化)
             vw: 0, vh: 0,// 储存视频宽高
             cols: 0,rows: 0, char_w: 0, char_h: 0,// 字符画行列及采集块宽高
-            hasColor: false,// 是否输出色彩
-            spanTempFn : doT.template('<span style="color:rgb({{=it.R}},{{=it.G}},{{=it.B}});">{{=it.T}}</span>')   //字符画像素模板
         },
         // 动态计算
         computed:{
@@ -51,20 +46,27 @@ $(function(){
             // 字符画最大行数
             maxCols:function(){
                 return this.sh / this.lineHeight;
+            },
+            // 画面帧间隔时间ms
+            fpsStep: function(){
+                return 1000/this.fps;
             }
         },
         mounted: function () {
-            // 初始化结束后// 开始位置
-            this.$nextTick(this.init);
+            this.$nextTick(this.init);// 初始化结束后// 开始位置
         },
         methods: {
             // 初始化
             init(){
+                this.initStats();// 初始化统计工具
+                this.initEvent();// 初始化事件
+            },
+            // 初始化统计工具
+            initStats(){
                 this.stats.domElement.style.position = 'absolute';
                 this.stats.domElement.style.left = '0px';
                 this.stats.domElement.style.top = '0px';
-                document.body.appendChild( this.stats.domElement );
-                this.initEvent();
+                this.showStats ? $("body").append(this.stats.domElement) : null;
             },
             // 初始化事件
             initEvent(){
@@ -84,6 +86,8 @@ $(function(){
                 // 视频源meta加载后
                 $(_this.video).on("loadedmetadata",function(e){
                     let vw =_this.vw= this.videoWidth, vh =_this.vh= this.videoHeight;
+                    // _this.canvas.width = vw;
+                    // _this.canvas.height = vh;
                     _this.canvas.width = vw/_this.sw>0.2 ? _this.sw/5 : vw;// 更新画布大小
                     _this.canvas.height = vh*_this.canvas.width/vw;
                     _this.resetToCharsConfig();
@@ -105,23 +109,9 @@ $(function(){
             },
             // 更新画面
             update(frame,frameData){
-                // TODO canvas 双缓冲减少卡顿
-                this.cacheFrame.push(frame);// 缓存画面
-                this.content = frame;//渲染画面
-                this.stats.update();
-            },
-            // 播放缓存画面
-            playCacheFrame(){
-                let cacheFrame = this.cacheFrame, playCacheFrameIndex = 0, len = cacheFrame.length;
-                window.timer = setInterval(function (){
-                    if(playCacheFrameIndex>len){
-                        this.content = cacheFrame[playCacheFrameIndex];
-                        this.stats.update();
-                        playCacheFrameIndex++;
-                    }else{
-                        clearInterval(window.timer);
-                    }
-                }.bind(this), 34);// 1000/34=29.41fps
+                this.content = frame;// 渲染画面
+                this.stats.update();// 触发Stats统计
+                this.enableCache ? this.cacheFrame.push(frame) : null;// 缓存画面
             },
             // 重置采集参数
             resetToCharsConfig(){
@@ -150,17 +140,17 @@ $(function(){
             },
             // 转换为字符串
             toFrame(frameData, callback){
-                let hasColor = this.hasColor, spanTempFn = this.spanTempFn;
+                let enableColor = this.enableColor, spanTempFn = this.spanTempFn;
                 var frameStr = frameData.map(function(v){
                     return v.map(function(op){
-                        return hasColor ? spanTempFn(op) : op.T;
+                        return enableColor ? spanTempFn(op) : op.T;
                     }).join("");
                 }).join("<br/>\n");
                 callback(frameStr);
             },
             // 图像转字符画
             toChars(ctx, cw, ch, callback) {
-                let imgDate = ctx.getImageData(0, 0, cw, ch).data, hasColor = this.hasColor, spanTempFn = this.spanTempFn;// 当前画布图像数据,是否包含配色,字符画模板
+                let imgDate = ctx.getImageData(0, 0, cw, ch).data, enableColor = this.enableColor, spanTempFn = this.spanTempFn;// 当前画布图像数据,是否包含配色,字符画模板
                 let cols_len = this.cols, rows_len = this.rows ,char_w = this.char_w, char_h = this.char_h;
                 // 遍历每个字符画像素获取灰度值映射字符追加至字符画帧数据
                 let frameRows = [], rowArray = [];
@@ -168,31 +158,33 @@ $(function(){
                     let frameCols = [],colArray = [];
                     for (let c=0; c<cols_len; c++) {
                         let op = this.getAvgGray(~~(char_w*c), ~~(char_h*r) , ~~(char_w), ~~(char_h), cw, ch, imgDate);// 获取灰度均值
-                        frameCols.push(hasColor ? spanTempFn(op) : op.T);// 获取灰度映射字符追加入帧(仅灰度):获取灰度映射字符追加入帧(含色彩,较消耗性能)
-                        colArray.push(op);
+                        frameCols.push(enableColor ? spanTempFn(op) : op.T);// 获取灰度映射字符追加入帧(仅灰度):获取灰度映射字符追加入帧(含色彩,较消耗性能)
+                        // colArray.push(op);// 对象行数据
                     }
                     frameRows.push(frameCols.join(""));
-                    rowArray.push(colArray);
+                    // rowArray.push(colArray);// 对象帧数据
                 };
                 callback(frameRows.join("<br/>\n"),rowArray);
             },
             // 播放视频
             play(){
-                var _this = this;
-                let ctx = this.canvas.getContext('2d'), cw = this.canvas.width, ch = this.canvas.height;
+                let _this = this, ctx = this.canvas.getContext('2d'), cw = this.canvas.width, ch = this.canvas.height;
                 window.timer = setInterval(function (){
                     ctx.clearRect(0, 0, cw, ch); // 清除画布
                     ctx.drawImage(this.video, 0, 0, cw, ch);// 将视频当前帧画面绘制至画布
                     this.toChars(ctx, cw, ch, this.update);// 将画布图像数据转换为字符画
-                }.bind(this), 17);// 1000/34=29.41fps
-                // let loop = function loop(e){
-                //     if (!_this.video.paused) {
-                //         ctx.drawImage(_this.video, 0, 0, cw, ch);// 将视频当前帧画面绘制至画布 
-                //         _this.toChars(ctx, cw, ch, _this.update);// 将画布图像数据转换为字符画
-                //         window.RAF(loop);
-                //     }
-                // }
-                // window.RAF(loop);
+                }.bind(this), this.fpsStep);
+            },
+            // 播放缓存画面
+            playCacheFrame(){
+                let _this = this, cacheFrame = this.cacheFrame, len = cacheFrame.length, playCacheFrameIndex = 0;
+                window.timer = setInterval(function (){
+                    if(this.enableCache && playCacheFrameIndex<len){
+                        this.content = cacheFrame[playCacheFrameIndex];
+                        playCacheFrameIndex++;
+                        this.stats.update();// 触发Stats统计
+                    }
+                }.bind(this), this.fpsStep);
             }
         }
     });
