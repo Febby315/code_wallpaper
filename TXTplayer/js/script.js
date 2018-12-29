@@ -7,12 +7,12 @@ $(function(){
             fileInput: document.getElementById("file"),// 文件DOM对象
             video: document.getElementById("video"),// 视频DOM对象
             canvas: document.createElement("canvas"),// 画板DOM对象
-            showStats: true,//显示统计信息
+            showStats: false,//显示统计信息
             stats: new Stats(),// 性能监视器:含fps、耗时ms、内存分配
             enableCache: true,// 启用缓存
             cacheFrame:[],// 缓存画面
             enableColor: false,// 启用输出色彩
-            spanTempFn : doT.template('<i style="color:rgb({{=it.R}},{{=it.G}},{{=it.B}});">{{=it.T}}</i>'),//彩色字符画像素模板
+            spanTempFn: doT.template('<span style="color:rgb({{=it.R}},{{=it.G}},{{=it.B}});">{{=it.T}}</span>'),//彩色字符画像素模板
             fps: 144,// fps(流畅度)
             fontSize: 7||parseInt($("#view").css("font-size")), lineHeight: 8||parseInt($("#view").css("line-height")),// 视图容器字体大小及行高
             chars: ['&nbsp;', '·', ':', 'i', 't', 'd', 'k', 'w', '$', '@'],// 映射字符集
@@ -62,6 +62,7 @@ $(function(){
             },
             // 初始化统计工具
             initStats(){
+                this.stats.domElement.className = "stats";
                 this.showStats ? $("body").append(this.stats.domElement) : null;
             },
             // 初始化事件
