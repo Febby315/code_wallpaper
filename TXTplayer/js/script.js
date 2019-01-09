@@ -9,7 +9,7 @@ $(function(){
             canvas: document.createElement("canvas"),// 画板DOM对象
             showStats: false,//显示统计信息
             stats: new Stats(),// 性能监视器:含fps、耗时ms、内存分配
-            enableCache: true,// 启用缓存
+            enableCache: false,// 启用缓存
             cacheFrame:[],// 缓存画面
             enableColor: false,// 启用输出色彩
             spanTempFn: doT.template('<span style="color:rgb({{=it.R}},{{=it.G}},{{=it.B}});">{{=it.T}}</span>'),//彩色字符画像素模板
@@ -68,6 +68,20 @@ $(function(){
             // 初始化事件
             initEvent(){
                 let _this = this;
+                var flvurl = "http://hls.yy.com/newlive/22490906_22490906.flv?org=yyweb&appid=0&uuid=85fdb281e4e54dbf9a2ff2408e155ebb&t=1547044198&tk=38368db45ea125b8949344ec7fb42ce6&uid=0&ex_audio=0&ex_coderate=1200&ex_spkuid=0";
+                var m3u8url = "http://proxy.hls.yy.com/livesystem/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0.m3u8?org=yyweb&uuid=d8cee895f547417d82b0e297118278c5&t=1547044198&tk=09b38b158a6ba249a511d6e81ff9f189";
+                // flv
+                // if (flvjs.isSupported()) {
+                //     var flvPlayer = flvjs.createPlayer({ type: 'flv', url: flvurl });
+                //     flvPlayer.attachMediaElement(_this.video);
+                //     flvPlayer.load();
+                // }
+                // m3u8
+                // if(Hls.isSupported()) {
+                //     var hls = new Hls();
+                //     hls.loadSource(m3u8url);
+                //     hls.attachMedia(_this.video);
+                // }
                 // 窗口大小改变
                 $(window).on("resize",function(e){
                     _this.sw = $(window).width();
