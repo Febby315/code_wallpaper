@@ -6,24 +6,32 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>字符画播放器 - Febby315</title>
-    <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.slim.min.js"></script>
+    <!-- CDN -->
+    <!-- <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.slim.min.js"></script>
     <script src="https://cdn.staticfile.org/stats.js/r16/Stats.min.js"></script>
     <script src="https://cdn.staticfile.org/hls.js/0.10.1/hls.min.js"></script>
     <script src="https://cdn.staticfile.org/flv.js/1.4.2/flv.min.js"></script>
     <script src="https://cdn.staticfile.org/vue/2.5.21/vue.min.js"></script>
-    <script src="https://cdn.staticfile.org/dot/1.1.2/doT.min.js"></script>
+    <script src="https://cdn.staticfile.org/dot/1.1.2/doT.min.js"></script> -->
+    <!-- lib -->
+    <script src="lib/jquery.slim.min.js"></script>
+    <script src="lib/Stats.min.js"></script>
+    <script src="lib/hls.min.js"></script>
+    <script src="lib/flv.min.js"></script>
+    <script src="lib/vue.min.js"></script>
+    <script src="lib/doT.min.js"></script>
     <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body onselectstart="return false">
-    <div id="tool">
-        <input id="file" type="file" hidden>
-        <video id="video" src="video/v.mp4"></video><br/>
-        <button type="button" onclick="javascript:$('#file').click();">选择视频</button>
-        <button type="button" onclick="javascript:video.paused?video.play():video.pause();">播放/暂停</button>
-        <button type="button" onclick="javascript:v_app.playCacheFrame();">播放缓存</button>
-    </div>
     <div id="app">
+        <div id="tool">
+            <input id="file" type="file" hidden>
+            <video id="video" src="video/v.mp4"></video><br/>
+            <button type="button" @click="fileInput.click();">选择视频</button>
+            <button type="button" @click="videoEle.paused?videoEle.play():videoEle.pause();">播放/暂停</button>
+            <button type="button" @click="playCacheFrame();">播放缓存</button>
+        </div>
         <div id="view" v-html="content"></div>
     </div>
     <script src="js/script.js"></script>
