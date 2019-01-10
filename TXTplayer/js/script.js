@@ -4,8 +4,8 @@ $(function(){
         el: "#app",
         data: {
             src: "video/v.mp4",
-            flvsrc: "https://hls.yy.com/newlive/22490906_22490906.flv?org=yyweb&appid=0&uuid=85fdb281e4e54dbf9a2ff2408e155ebb&t=1547044198&tk=38368db45ea125b8949344ec7fb42ce6&uid=0&ex_audio=0&ex_coderate=1200&ex_spkuid=0",
-            m3u8src: "https://proxy.hls.yy.com/livesystem/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0.m3u8?org=yyweb&uuid=d8cee895f547417d82b0e297118278c5&t=1547044198&tk=09b38b158a6ba249a511d6e81ff9f189",
+            flvsrc: "//hls.yy.com/newlive/22490906_22490906.flv?org=yyweb&appid=0&uuid=85fdb281e4e54dbf9a2ff2408e155ebb&t=1547044198&tk=38368db45ea125b8949344ec7fb42ce6&uid=0&ex_audio=0&ex_coderate=1200&ex_spkuid=0",
+            m3u8src: "//proxy.hls.yy.com/livesystem/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0.m3u8?org=yyweb&uuid=d8cee895f547417d82b0e297118278c5&t=1547044198&tk=09b38b158a6ba249a511d6e81ff9f189",
             content: null,// 视图
             fileInput: document.getElementById("file"),// 文件DOM对象
             videoEle: document.getElementById("video"),// 视频DOM对象
@@ -55,7 +55,12 @@ $(function(){
             }
         },
         mounted: function () {
-            this.$nextTick(this.init);// 初始化结束后// 开始位置
+            this.$nextTick(function(){
+                this.initStats();// 初始化统计工具
+                this.initEvent();// 初始化事件
+                // this.loadFlv(this.flvsrc);// flv
+                // this.loadHls(this.m3u8src);// m3u8
+            });// 初始化结束后// 开始位置
         },
         methods: {
             // 加载Flv链接地址
@@ -166,7 +171,7 @@ $(function(){
             },
             // 初始化事件
             initEvent(){
-                let _this = this;
+                let _this = v_app;
                 // 窗口大小改变
                 $(window).on("resize",function(e){
                     _this.sw = $(window).width();
@@ -198,13 +203,6 @@ $(function(){
                     clearInterval(window.timer);// 视频暂停或结束停止定时器
                     $("#tool").show();// 显示工具栏
                 });
-            },
-            // 初始化
-            init(){
-                this.initStats();// 初始化统计工具
-                this.initEvent();// 初始化事件
-                // this.loadFlv(this.flvsrc);// flv
-                // this.loadHls(this.m3u8src);// m3u8
             }
         }
     });
