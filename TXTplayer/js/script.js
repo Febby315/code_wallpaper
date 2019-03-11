@@ -57,7 +57,12 @@ $(function(){
             }
         },
         mounted: function () {
-            this.$nextTick(this.init);// 初始化结束后// 开始位置
+            this.$nextTick(function(){
+                this.initStats();// 初始化统计工具
+                this.initEvent();// 初始化事件
+                // this.loadFlv(this.flvsrc);// flv
+                // this.loadHls(this.m3u8src);// m3u8
+            });// 初始化结束后// 开始位置
         },
         methods: {
             // 加载Flv链接地址
@@ -171,7 +176,7 @@ $(function(){
             },
             // 初始化事件
             initEvent(){
-                let _this = this;
+                let _this = v_app;
                 // 窗口大小改变
                 $(window).on("resize",function(e){
                     _this.sw = $(window).width();
@@ -203,13 +208,6 @@ $(function(){
                     clearInterval(window.timer);// 视频暂停或结束停止定时器
                     $("#tool").show();// 显示工具栏
                 });
-            },
-            // 初始化
-            init(){
-                this.initStats();// 初始化统计工具
-                this.initEvent();// 初始化事件
-                // this.loadFlv(this.flvsrc);// flv
-                // this.loadHls(this.m3u8src);// m3u8
             }
         }
     });
