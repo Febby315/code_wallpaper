@@ -7,14 +7,16 @@ $(function(){
             flvsrc: "http://hls.yy.com/newlive/22490906_22490906.flv?org=yyweb&appid=0&uuid=85fdb281e4e54dbf9a2ff2408e155ebb&t=1547044198&tk=38368db45ea125b8949344ec7fb42ce6&uid=0&ex_audio=0&ex_coderate=1200&ex_spkuid=0",
             m3u8src: "http://proxy.hls.yy.com/livesystem/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0.m3u8?org=yyweb&uuid=d8cee895f547417d82b0e297118278c5&t=1547044198&tk=09b38b158a6ba249a511d6e81ff9f189",
             content: null,// 视图
-            fileInput: document.getElementById("file"),// 文件DOM对象
-            videoEle: document.getElementById("video"),// 视频DOM对象
-            canvas: document.createElement("canvas"),// 画板DOM对象
+            viewEle: document.getElementById("view"),//视图DOM节点
+            fileInput: document.getElementById("file"),// 文件DOM节点
+            videoEle: document.getElementById("video"),// 视频DOM节点
+            canvas: document.createElement("canvas"),// 画板DOM节点
+            range: document.createRange(),// 用于通过TagString创建虚拟dom(DocumentFragment)节点
             showStats: true,//显示统计信息
             stats: new Stats(),// 性能监视器:含fps、耗时ms、内存分配
             enableCache: !true,// 启用缓存
             cacheFrame:[],// 缓存画面
-            enableColor: !true,// 启用输出色彩
+            enableColor: true,// 启用输出色彩
             spanTempFn: doT.template('<span style="color:rgb({{=it.R}},{{=it.G}},{{=it.B}});">{{=it.T}}</span>'),//彩色字符画像素模板
             fps: 144,// fps(流畅度)
             fontSize: 7||parseInt($("#view").css("font-size")), lineHeight: 8||parseInt($("#view").css("line-height")),// 视图容器字体大小及行高
@@ -111,7 +113,10 @@ $(function(){
             },
             // 更新画面
             update(frame, frameData){
-                this.content = frame;// 渲染画面
+                var fragment = this.range.createContextualFragment(frame);
+                // this.viewEle.innerHtml = null;
+                // this.viewEle.appendChild(fragment);
+                // this.content = frame;// 渲染画面
                 this.$nextTick(this.stats.update.bind(this.stats));// 触发性能统计
                 this.enableCache ? this.cacheFrame.push(frame) : null;// 缓存画面
             },
