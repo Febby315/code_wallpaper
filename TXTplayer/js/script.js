@@ -86,8 +86,8 @@ $(function(){
             this.$nextTick(function(){
                 this.initStats();// 初始化统计工具
                 this.initEvent();// 初始化事件
-                this.loadFlv(this.flvsrc);// flv
-                // this.loadHls(this.m3u8src);// m3u8
+                // this.loadFlv(this.flvsrc);// flv
+                this.loadHls(this.m3u8src);// m3u8
             });// 初始化结束后// 开始位置
         },
         methods: {
@@ -97,7 +97,7 @@ $(function(){
                     var flvPlayer = flvjs.createPlayer({ type: 'flv', url: src });
                     flvPlayer.attachMediaElement(this.videoEle);
                     flvPlayer.load();
-                    flvPlayer.play();
+                    // flvPlayer.play();
                     callback instanceof Function ? callback(flvPlayer) : null;
                 }
             },
