@@ -55,6 +55,18 @@ $(function(){
             fpsStep: function(){
                 return 1000 / this.fps;
             },
+            // 实时生成行模板
+            rowTempFn: function(){
+                let cols = this.cols, enableColor = this.enableColor ,templates = [];
+                for(let i=0;i<cols;i++){
+                    if(!enableColor){
+                        templates.push('{{=it['+i+'].T}}');
+                    }else{
+                        templates.push('<span style="color:rgb({{=it['+i+'].R}},{{=it['+i+'].G}},{{=it['+i+'].B}});">{{=it['+i+'].T}}</span>');
+                    }
+                }
+                return doT.template(templates.join(''));
+            },
             // 实时生成帧模板
             frameTempFn: function(){
                 let _this = this, rows = _this.rows, cols = _this.cols, enableColor = this.enableColor, templates = [];
@@ -81,7 +93,7 @@ $(function(){
         },
         methods: {
             // 加载Flv链接地址
-            loadFlv(src, callback){
+            loadFlv: function(src, callback){
                 if (flvjs.isSupported()) {
                     var flvPlayer = flvjs.createPlayer({ type: 'flv', url: src });
                     flvPlayer.attachMediaElement(this.videoEle);
@@ -91,7 +103,7 @@ $(function(){
                 }
             },
             // 加载Hls链接地址(m3u8)
-            loadHls(src, callback){
+            loadHls: function(src, callback){
                 if(Hls.isSupported()) {
                     var hls = new Hls();
                     hls.loadSource(src);
@@ -100,7 +112,7 @@ $(function(){
                 }
             },
             // 播放视频
-            play(){
+            play: function(){
                 let _this = this, ctx = _this.canvas.getContext('2d'), cw = _this.canvas.width, ch = _this.canvas.height;
                 window.timer = setInterval(function (){
                     if(!_this.videoEle.paused){
@@ -110,7 +122,7 @@ $(function(){
                 }.bind(this), _this.fpsStep);
             },
             // 播放缓存画面
-            playCacheFrame(){
+            playCacheFrame: function(){
                 clearInterval(window.timer);// 清除上个定时器
                 let _this = this, cacheFrames = _this.cacheFrame, len = cacheFrames.length, index = 0;
                 window.timer = setInterval(function (){
@@ -124,7 +136,7 @@ $(function(){
                 }.bind(this), _this.fpsStep);
             },
             // 重置采集参数
-            resetToCharsConfig(){
+            resetToCharsConfig: function(){
                 let t_rows, t_cols, cw=this.canvas.width, ch=this.canvas.height;// 字符画行数(高度)、字符画列数(宽度)、灰度采集块宽度、灰度采集块高度
                 // 根据视频、屏幕宽高比比值决定通过高度自适应或宽度自适应获得字符画宽度或高度
                 this.screenScale>this.videoScale ? t_rows=this.maxCols>ch?ch:this.maxCols : t_cols=this.maxRows>cw?cw:this.maxRows;
@@ -133,8 +145,12 @@ $(function(){
                 this.cols = t_cols, this.rows = t_rows;// 临时数据储存
             },
             // 更新画面
-            update(frameData){
-                frame = this.frameTempFn(frameData);
+            update: function(frameData){
+                let rowTempFn = this.rowTempFn;
+                let frame = frameData.map(function(e){
+                    return rowTempFn(e);
+                }).join("<br/>\n");
+                // frame = this.frameTempFn(frameData); //RangeError: Maximum call stack size exceeded(超出堆栈上限)
                 // var fragment = this.range.createContextualFragment(frame);
                 // _this.viewEle.innerHtml = null;
                 // _this.viewEle.appendChild(fragment);
@@ -143,7 +159,7 @@ $(function(){
                 this.enableCache ? this.cacheFrame.push(frame) : null;// 缓存画面
             },
             // 计算一个像素区域的平均灰度值和灰度映射字符及RGB值对象
-            getAvgGray(offset_x, offset_y, w, h,cw,ch, imgDate) {
+            getAvgGray: function(offset_x, offset_y, w, h,cw,ch, imgDate) {
                 let pixels=w*h, R=0, G=0, B=0;// 总像素数,默认RGB色
                 let sumGray=0, sumR=0, sumG=0, sumB=0;// 初始化区域总灰度,
                 let py, px, idx;
@@ -159,7 +175,7 @@ $(function(){
                 return { Gray: avgGray, T: this.charMap[avgGray], R: ~~(sumR/pixels), G: ~~(sumG/pixels), B: ~~(sumB/pixels) };
             },
             // 图像转字符画数据
-            toFrameData(ctx, cw, ch, callback) {
+            toFrameData: function(ctx, cw, ch, callback) {
                 let imgDate = ctx.getImageData(0, 0, cw, ch).data, spanTempFn = this.spanTempFn;// 当前画布图像数据,是否包含配色,字符画模板
                 let cols_len = this.cols, rows_len = this.rows ,char_w = this.char_w, char_h = this.char_h;
                 // 遍历每个字符画像素获取灰度值映射字符追加至字符画帧数据
@@ -175,12 +191,12 @@ $(function(){
                 callback instanceof Function ? callback(rowArray) : null;
             },
             // 初始化统计工具
-            initStats(){
+            initStats: function(){
                 this.stats.domElement.className = "stats";
                 this.showStats ? $("body").append(this.stats.domElement) : null;
             },
             // 初始化事件
-            initEvent(){
+            initEvent: function(){
                 let _this = v_app;
                 // 窗口大小改变
                 $(window).on("resize",function(e){
