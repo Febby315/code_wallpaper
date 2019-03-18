@@ -4,8 +4,9 @@ $(function(){
         el: "#app",
         data: {
             src: "video/v.mp4",
-            flvsrc: "http://hls.yy.com/newlive/22490906_22490906.flv?org=yyweb&appid=0&uuid=85fdb281e4e54dbf9a2ff2408e155ebb&t=1547044198&tk=38368db45ea125b8949344ec7fb42ce6&uid=0&ex_audio=0&ex_coderate=1200&ex_spkuid=0",
-            m3u8src: "http://proxy.hls.yy.com/livesystem/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0.m3u8?org=yyweb&uuid=d8cee895f547417d82b0e297118278c5&t=1547044198&tk=09b38b158a6ba249a511d6e81ff9f189",
+            // flv=>YY993 & m3u8=>YY991
+            flvsrc: "http://proxy.hls.yy.com/livesystem/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0.flv?org=yyweb&uuid=44ee11ec2b19498cba87716241f06c17&t=1552899062&tk=f28e6df6faf2b792734fc2db7b64ff3d",
+            m3u8src: "http://proxy.hls.yy.com/livesystem/15013_xv_54880976_54880976_0_0_0-15013_xa_54880976_54880976_0_0_0.m3u8?org=yyweb&uuid=16be5eae31ca4b7eb9c213b463c59952&t=1552898384&tk=9362c6f3ee3c26658dc042851e190e8b",
             content: null,// 视图html内容
             viewEle: document.getElementById("view"),//视图DOM节点
             fileInput: document.getElementById("file"),// 文件DOM节点
@@ -14,8 +15,6 @@ $(function(){
             range: document.createRange(),// 用于通过TagString创建虚拟dom(DocumentFragment)节点
             showStats: !true,//显示统计信息
             stats: new Stats(),// 性能监视器:含fps、耗时ms、内存分配
-            enableCache: !true,// 启用缓存
-            cacheFrame:[],// 缓存画面
             enableColor: !true,// 启用输出色彩
             spanTempFn: doT.template('<span style="color:rgb({{=it.R}},{{=it.G}},{{=it.B}});">{{=it.T}}</span>'),//彩色字符画像素模板
             fps: 144,// fps(流畅度)
@@ -88,7 +87,7 @@ $(function(){
                 this.initStats();// 初始化统计工具
                 this.initEvent();// 初始化事件
                 // this.loadFlv(this.flvsrc);// flv
-                // this.loadHls(this.m3u8src);// m3u8
+                this.loadHls(this.m3u8src);// m3u8
             });// 初始化结束后// 开始位置
         },
         methods: {
@@ -121,20 +120,6 @@ $(function(){
                     }
                 }.bind(this), _this.fpsStep);
             },
-            // 播放缓存画面
-            playCacheFrame: function(){
-                clearInterval(window.timer);// 清除上个定时器
-                let _this = this, cacheFrames = _this.cacheFrame, len = cacheFrames.length, index = 0;
-                window.timer = setInterval(function (){
-                    if(_this.enableCache && index<len){
-                        _this.content = cacheFrames[index];
-                        index++;
-                        _this.$nextTick(_this.stats.update.bind(_this.stats));
-                    }else{
-                        clearInterval(window.timer);
-                    }
-                }.bind(this), _this.fpsStep);
-            },
             // 重置采集参数
             resetToCharsConfig: function(){
                 let t_rows, t_cols, cw=this.canvas.width, ch=this.canvas.height;// 字符画行数(高度)、字符画列数(宽度)、灰度采集块宽度、灰度采集块高度
@@ -156,7 +141,6 @@ $(function(){
                 // _this.viewEle.appendChild(fragment);
                 this.content = frame;// 渲染画面
                 this.$nextTick(this.stats.update.bind(this.stats));// 触发性能统计
-                this.enableCache ? this.cacheFrame.push(frame) : null;// 缓存画面
             },
             // 计算一个像素区域的平均灰度值和灰度映射字符及RGB值对象
             getAvgGray: function(offset_x, offset_y, w, h,cw,ch, imgDate) {
@@ -220,7 +204,6 @@ $(function(){
                 // 开始播放
                 $(this.videoEle).on("play",function(e){
                     $("#tool").hide();// 隐藏工具栏
-                    _this.cacheFrame = [];// 清除缓存画面
                     setTimeout(_this.play,0);// 开始播放
                 });
                 // 暂停/结束
