@@ -97,7 +97,7 @@ $(function(){
                     var flvPlayer = flvjs.createPlayer({ type: 'flv', url: src });
                     flvPlayer.attachMediaElement(this.videoEle);
                     flvPlayer.load();
-                    // flvPlayer.play();
+                    flvPlayer.play();
                     callback instanceof Function ? callback(flvPlayer) : null;
                 }
             },
