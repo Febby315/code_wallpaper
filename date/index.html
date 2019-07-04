@@ -12,41 +12,43 @@
 </head>
 <body>
     <div id="view" v-cloak>
-        <!-- <div class="gz">({{toGz(staic.gzYear)}})</div> -->
+        <!-- <div class="gz">({{toUpperGz(base.gzYear)}})</div> -->
         <div class="item-box">
             <div id="tgdz" class="item tgdz" :style="style.gzYear">
-                <div v-for="(v, i) in 60" class="list tgdz-item" :data-key="i" :class="{active: v==staic.gzYear}" :style="getRotateStyle(v, 60)">
-                    {{toGz(v)}}
+                <div v-for="(v, i) in 60" class="list tgdz-item" :key="i" :class="{active: v== base.gzYear}" :style="getRotateStyle(v, base.gz)">
+                    {{toUpperGz(v)}}
                 </div>
             </div>
             <div id="second" class="item second" :style="style.second">
-                <div v-for="(v, i) in staic.second" class="list second-item" :data-key="i" :class="{active: i==ct.second()}" :style="getRotateStyle(i, staic.second)">
+                <!-- <transition-group name="second"></transition-group> -->
+                <div v-for="(v, i) in base.second" class="list second-item" :key="i" :class="{active: i==ct.second()}" :style="getRotateStyle(i, base.second)">
                     {{toUpper(i, true)}}秒
                 </div>
             </div>
             <div id="minute" class="item minute" :style="style.minute">
-                <div v-for="(v, i) in staic.minute" class="list minute-item" :data-key="i" :class="{active: i==ct.minute()}" :style="getRotateStyle(i, staic.minute)">
+                <div v-for="(v, i) in base.minute" class="list minute-item" :key="i" :class="{active: i==ct.minute()}" :style="getRotateStyle(i, base.minute)">
                     {{toUpper(i, true)}}分
                 </div>
             </div>
             <div id="hour" class="item hour" :style="style.hour">
-                <div v-for="(v, i) in staic.hour" class="list hour-item" :data-key="i" :class="{active: i==ct.hour()}" :style="getRotateStyle(i, staic.hour)">
+                <div v-for="(v, i) in base.hour" class="list hour-item" :key="i" :class="{active: i==ct.hour()}" :style="getRotateStyle(i, base.hour)">
                     {{toUpper(i, true)}}时
                 </div>
             </div>
             <div id="day" class="item day" :style="style.date">
-                <div v-for="(v, i) in staic.date" class="list day-item" :data-key="i" :class="{active: v==ct.date()}" :style="getRotateStyle(i, staic.date)">
+                <div v-for="(v, i) in base.date" class="list day-item" :key="i" :class="{active: v==ct.date()}" :style="getRotateStyle(i, base.date)">
                     {{toUpper(v, true)}}日
                 </div>
             </div>
             <div id="month" class="item month" :style="style.month">
-                <div v-for="(v, i) in staic.month" class="list month-item" :data-key="i" :class="{active: v==ct.month()+1}" :style="getRotateStyle(i, staic.month)">
+                <div v-for="(v, i) in base.month" class="list month-item" :key="i" :class="{active: v==ct.month()+1}" :style="getRotateStyle(i, base.month)">
                     {{toUpper(v, true)}}月
                 </div>
             </div>
             <div id="year" class="item year" :style="style.year">
-                <div v-for="(v, i) in staic.year" class="list year-item" :data-key="i" :class="{active: ct.year()}">
-                    {{toUpper(ct.year())}}年
+                <div v-for="(v, i) in base.year" class="list year-item" :key="i" :class="{active: v==ct.year()}">
+                    <!-- <img src="https://q4.qlogo.cn/g?b=qq&nk=564822672&s=140"> -->
+                    {{toUpper(v)}}
                 </div>
             </div>
         </div>
