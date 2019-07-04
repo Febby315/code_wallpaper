@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>时间轮壁纸</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.staticfile.org/dot/1.1.2/doT.min.js"></script>
+    <script src="https://cdn.staticfile.org/vue/2.6.10/vue.min.js"></script>
+    <script src="https://cdn.staticfile.org/moment.js/2.24.0/moment.min.js"></script>
+</head>
+<body>
+    <div id="view" v-cloak>
+        <!-- <div class="gz">({{toGz(staic.gzYear)}})</div> -->
+        <div class="item-box">
+            <div id="tgdz" class="item tgdz" :style="style.gzYear">
+                <div v-for="(v, i) in 60" class="list tgdz-item" :data-key="i" :class="{active: v==staic.gzYear}" :style="getRotateStyle(v, 60)">
+                    {{toGz(v)}}
+                </div>
+            </div>
+            <div id="second" class="item second" :style="style.second">
+                <div v-for="(v, i) in staic.second" class="list second-item" :data-key="i" :class="{active: i==ct.second()}" :style="getRotateStyle(i, staic.second)">
+                    {{toUpper(i, true)}}秒
+                </div>
+            </div>
+            <div id="minute" class="item minute" :style="style.minute">
+                <div v-for="(v, i) in staic.minute" class="list minute-item" :data-key="i" :class="{active: i==ct.minute()}" :style="getRotateStyle(i, staic.minute)">
+                    {{toUpper(i, true)}}分
+                </div>
+            </div>
+            <div id="hour" class="item hour" :style="style.hour">
+                <div v-for="(v, i) in staic.hour" class="list hour-item" :data-key="i" :class="{active: i==ct.hour()}" :style="getRotateStyle(i, staic.hour)">
+                    {{toUpper(i, true)}}时
+                </div>
+            </div>
+            <div id="day" class="item day" :style="style.date">
+                <div v-for="(v, i) in staic.date" class="list day-item" :data-key="i" :class="{active: v==ct.date()}" :style="getRotateStyle(i, staic.date)">
+                    {{toUpper(v, true)}}日
+                </div>
+            </div>
+            <div id="month" class="item month" :style="style.month">
+                <div v-for="(v, i) in staic.month" class="list month-item" :data-key="i" :class="{active: v==ct.month()+1}" :style="getRotateStyle(i, staic.month)">
+                    {{toUpper(v, true)}}月
+                </div>
+            </div>
+            <div id="year" class="item year" :style="style.year">
+                <div v-for="(v, i) in staic.year" class="list year-item" :data-key="i" :class="{active: ct.year()}">
+                    {{toUpper(ct.year())}}年
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>
