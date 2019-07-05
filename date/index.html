@@ -11,6 +11,7 @@
     <script src="https://cdn.staticfile.org/moment.js/2.24.0/moment.min.js"></script>
 </head>
 <body>
+    <div class="bg"></div>
     <div id="view" v-cloak>
         <!-- <div class="gz">({{toUpperGz(base.gzYear)}})</div> -->
         <div class="item-box">
@@ -21,9 +22,11 @@
             </div>
             <div id="second" class="item second" :style="style.second">
                 <!-- <transition-group name="second"></transition-group> -->
-                <div v-for="(v, i) in base.second" class="list second-item" :key="i" :class="{active: i==ct.second()}" :style="getRotateStyle(i, base.second)">
-                    {{toUpper(i, true)}}秒
-                </div>
+                <!-- <transition-group name="second"> -->
+                    <div v-for="(v, i) in base.second" class="list second-item" :key="i" :class="{active: i==ct.second()}" :style="getRotateStyle(i, base.second)">
+                        {{toUpper(i, true)}}秒
+                    </div>
+                <!-- </transition-group> -->
             </div>
             <div id="minute" class="item minute" :style="style.minute">
                 <div v-for="(v, i) in base.minute" class="list minute-item" :key="i" :class="{active: i==ct.minute()}" :style="getRotateStyle(i, base.minute)">
