@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/v2.css">
+    <script src="//cdn.staticfile.org/jquery/3.3.1/jquery.slim.min.js"></script>
+    <script src="//cdn.staticfile.org/stats.js/r16/Stats.min.js"></script>
+    <script src="//cdn.staticfile.org/hls.js/0.10.1/hls.light.min.js"></script>
+    <script src="//cdn.staticfile.org/flv.js/1.4.2/flv.min.js"></script>
+    <script src="//cdn.staticfile.org/vue/2.6.9/vue.min.js"></script>
+    <script src="//cdn.staticfile.org/dot/1.1.2/doT.min.js"></script>
+    <script src="//cdn.staticfile.org/purl/2.3.1/purl.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div id="tool">
+            <input id="file" type="file" hidden>
+            <video id="video" :src="src"></video><br/>
+            <button type="button" @click="fileInput.click();">选择视频</button>
+            <button type="button" @click="videoEle.paused?videoEle.play():videoEle.pause();">播放/暂停</button>
+            <button type="button" @click="playCacheFrame();">播放缓存</button>
+        </div>
+        <div id="view" v-html="content"></div>
+    </div>
+    <script src="js/v2.js"></script>
+</body>
+</html>
