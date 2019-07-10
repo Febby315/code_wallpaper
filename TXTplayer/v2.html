@@ -7,26 +7,36 @@
     <title>字符画v2</title>
     <link rel="stylesheet" href="css/v2.css">
     <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.slim.min.js"></script>
-    <script src="https://cdn.staticfile.org/stats.js/r16/Stats.min.js"></script>
+    <!-- <script src="https://cdn.staticfile.org/stats.js/r16/Stats.min.js"></script>
     <script src="https://cdn.staticfile.org/hls.js/0.12.4/hls.light.min.js"></script>
-    <script src="https://cdn.staticfile.org/flv.js/1.5.0/flv.min.js"></script>
+    <script src="https://cdn.staticfile.org/flv.js/1.5.0/flv.min.js"></script> -->
     <script src="https://cdn.staticfile.org/vue/2.6.10/vue.min.js"></script>
     <script src="https://cdn.staticfile.org/dot/1.1.2/doT.min.js"></script>
     <script src="https://cdn.staticfile.org/purl/2.3.1/purl.min.js"></script>
 </head>
 <body>
     <div id="app">
-        <div id="tool" ref="tool">
-            <input id="file" ref="file" type="file" @change="fileChange($event)" hidden>
-            <video id="video" ref="video" @play="play($event)" @loadedmetadata="loadedmetadata"></video><br/>
-            <button type="button" @click="$refs.file.click();">选择视频</button>
-            <button type="button" @click="videoPlay($event)">播放/暂停</button>
-            <button type="button" @click="playCacheFrame();" v-show="enableCache">播放缓存</button>
+        <div>
+            <!-- x5-video-player-type="h5" -->
+            <!-- preload controls  -->
+            <video
+                id="video" ref="video" :src="src" @play="play($event)" @loadedmetadata="loadedmetadata($event)" @canplay="canplay($event)"
+                x5-video-player-fullscreen="ture"
+                playsinline webkit-playsinline x5-playsinline
+                autoplay
+            ></video>
         </div>
         <div id="view" ref="view" v-html="content">
             <div v-for="(rv, i) in frameData">
                 <span v-for="(cv, j) in rv">{{cv.T}}</span>
             </div>
+        </div>
+        <div id="tool" ref="tool">
+            <input id="file" ref="file" type="file" @change="fileChange($event)" hidden>
+            
+            <button type="button" @click="$refs.file.click();">选择视频</button>
+            <button type="button" @click="videoPlay($event)">播放/暂停</button>
+            <button type="button" @click="playCacheFrame();" v-show="enableCache">播放缓存</button>
         </div>
     </div>
     <script src="js/v2.js"></script>

@@ -3,7 +3,7 @@ $(function(){
     var v_app = window.v_app = new Vue({
         el: "#app",
         data: {
-            src: "",
+            src: "video/v2.mp4",
             flvsrc: "http://aliyun-flv.yy.com/live/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0-96597708953498332-96597708953498333-2-2748477-33.flv?codec=orig&secret=bec0e1c80fad166895855545ff4efc89&t=1562310185&appid=15013",
             m3u8src: "http://proxy.hls.yy.com/livesystem/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0.m3u8?org=yyweb&uuid=d8cee895f547417d82b0e297118278c5&t=1547044198&tk=09b38b158a6ba249a511d6e81ff9f189",
             content: null,// 视图html内容
@@ -13,7 +13,7 @@ $(function(){
             canvas: document.createElement("canvas"),// 画板DOM节点
             range: document.createRange(),// 用于通过TagString创建虚拟dom(DocumentFragment)节点
             showStats: !true,//显示统计信息
-            stats: new Stats(),// 性能监视器:含fps、耗时ms、内存分配
+            stats: null,// 性能监视器:含fps、耗时ms、内存分配
             enableCache: !true,// 启用缓存
             cacheFrame:[],// 缓存画面
             enableColor: !true,// 启用输出色彩
@@ -91,6 +91,9 @@ $(function(){
                     case "m3u8": _this.loadHls(nv); break;
                     default: video.src = nv; break;
                 }
+                this.$nextTick(function(){
+                    this.$refs.video.load();
+                });
             },
             content: function(nv, ov){
                 this.enableCache ? this.cacheFrame.push(nv) : null;// 缓存画面
@@ -144,7 +147,6 @@ $(function(){
                     if(_this.enableCache && index<len){
                         _this.content = cacheFrames[index];
                         index++;
-                        _this.$nextTick(_this.stats.update.bind(_this.stats));
                     }else{
                         clearInterval(window.timer);
                     }
@@ -175,11 +177,11 @@ $(function(){
             update: function(frameData){
                 let _this = this;
                 // 方法一
-                // let frame = frameData.map(function(e){
-                //     return _this.rowTempFn(e);
-                // }).join("<br/>\n");
+                let frame = frameData.map(function(e){
+                    return _this.rowTempFn(e);
+                }).join("<br/>\n");
                 // 方法二
-                let frame = this.currTempFn(frameData); //RangeError: Maximum call stack size exceeded(超出堆栈上限)
+                // let frame = this.currTempFn(frameData); //RangeError: Maximum call stack size exceeded(超出堆栈上限)
                 // 方法三 vue原生
                 // this.frameData = frameData;
                 // 方法四
@@ -188,7 +190,12 @@ $(function(){
                 // view.innerHtml = null;
                 // view.appendChild(fragment);
                 this.content = frame;// 渲染画面 this.content = frame;// 渲染画面
-                this.$nextTick(this.stats.update.bind(this.stats));// 触发性能统计
+                this.$nextTick(function(){
+                    if(this.showStats){
+                        let stats = this.stats;
+                        stats.update.bind(stats);
+                    }
+                });// 触发性能统计
             },
             // 计算一个像素区域的平均灰度值和灰度映射字符及RGB值对象
             getAvgGray: function(offset_x, offset_y, w, h,cw,ch, imgDate) {
@@ -224,8 +231,12 @@ $(function(){
             },
             // 初始化统计工具
             initStats: function(){
-                this.stats.domElement.className = "stats";
-                this.showStats ? $("body").append(this.stats.domElement) : null;
+                if(this.showStats){
+                    let stats = new Stats(); // 性能监视器:含fps、耗时ms、内存分配
+                    stats.domElement.className = "stats";
+                    this.stats = stats;
+                    $("body").append(this.stats.domElement)
+                }
             },
             // 文件更改时修改视频源
             fileChange: function(e){
@@ -237,7 +248,18 @@ $(function(){
             },
             // 媒体元数据加载
             loadedmetadata: function(e){
-                let vw =this.vw= e.target.videoWidth, vh =this.vh= e.target.videoHeight;
+                let video = this.$refs.video;
+                console.log("loadedmetadata", video.videoWidth, video.videoHeight);
+                let vw =this.vw= video.videoWidth, vh =this.vh= video.videoHeight;
+                this.canvas.width = vw/this.sw>0.2 ? this.sw/5 : vw;// 更新画布大小
+                this.canvas.height = vh*this.canvas.width/vw;
+                this.resetToCharsConfig();
+            },
+            // 媒体可播放
+            canplay: function(e){
+                let video = this.$refs.video;
+                console.log("canplay", video.videoWidth, video.videoHeight);
+                let vw =this.vw= video.videoWidth, vh =this.vh= video.videoHeight;
                 this.canvas.width = vw/this.sw>0.2 ? this.sw/5 : vw;// 更新画布大小
                 this.canvas.height = vh*this.canvas.width/vw;
                 this.resetToCharsConfig();
@@ -246,7 +268,8 @@ $(function(){
             play: function(){
                 let _this = this, ctx = _this.canvas.getContext('2d'), cw = _this.canvas.width, ch = _this.canvas.height;
                 let video = this.$refs.video;
-                $("#tool").hide();// 隐藏工具栏
+                console.log("canplay", video.videoWidth, video.videoHeight);
+                // $("#tool").hide();// 隐藏工具栏
                 this.cacheFrame = [];// 清除缓存画面
                 window.timer = setInterval(function (){
                     if(!video.paused){
@@ -264,7 +287,7 @@ $(function(){
             initEvent: function(){
                 let _this = this;
                 let video = this.$refs.video||this.videoEle;
-                // $("#tool").append(_this.canvas);
+                // $("#tool").prepend(_this.canvas);
                 // 窗口大小改变
                 $(window).on("resize",function(e){
                     _this.sw = $(window).width();
