@@ -86,9 +86,32 @@ $(function(){
             this.$nextTick(function(){
                 this.initStats();// 初始化统计工具
                 this.initEvent();// 初始化事件
+                this.src = purl().param("src")||"video/v2.mp4";
                 // this.loadFlv(this.flvsrc);// flv
                 // this.loadHls(this.m3u8src);// m3u8
             });// 初始化结束后// 开始位置
+        },
+        // 数据监听
+        watch: {
+            src: function(nv, ov){
+                let _this = this;
+                let video = this.$refs.video;
+                var ext = purl(nv).attr("file").split(".").pop();
+                switch(ext){
+                    case "flv": _this.loadFlv(nv); break;
+                    case "m3u8": _this.loadHls(nv); break;
+                    default: video.src = nv; break;
+                }
+                this.$nextTick(function(){
+                    // this.$refs.video.load();
+                });
+            },
+            content: function(nv, ov){
+                this.enableCache ? this.cacheFrame.push(nv) : null;// 缓存画面
+            },
+            enableColor: function(nv, ov){
+                this.resetToCharsConfig();
+            }
         },
         methods: {
             // 加载Flv链接地址

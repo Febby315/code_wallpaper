@@ -244,6 +244,24 @@ $(function(){
                 if(file.files[0]){
                     window.timer ? clearInterval(window.timer) : null;
                     this.src = URL.createObjectURL(file.files[0]);
+                    // 兼容图片
+                    let type=file.files[0].type;
+                    if(type.split("/")[0]==="image"){
+                        let _this = this;
+                        let canvas = _this.canvas;
+                        let ctx = canvas.getContext('2d');
+                        var img = new Image();
+                        img.src=this.src;
+                        img.onload = function(){
+                            let vw =this.vw= img.width, vh =this.vh= img.height;
+                            canvas.width = vw/this.sw>0.2 ? this.sw/5 : vw;// 更新画布大小
+                            canvas.height = vh*canvas.width/vw;
+                            _this.resetToCharsConfig();
+                            ctx.clearRect(0,0,canvas.width, canvas.height); 
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            _this.toFrameData(ctx, canvas.width, canvas.height, _this.update);// 将画布图像数据转换为字符画
+                        }
+                    }
                 }
             },
             // 媒体元数据加载
