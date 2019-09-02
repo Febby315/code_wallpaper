@@ -1,0 +1,16 @@
+::-webkit-scrollbar{ display: none; }
+/*  */
+html,body,#app{ margin: 0px; padding: 0px; width: 100%; height: 100%; overflow: hidden; background-color: #000; color: #eee; }
+#app{ display: flex; align-items: center; justify-content: center; }
+.box{ display: none; }
+#video{ position: absolute; left: 0px; top: 0px; max-width: 6vw; max-height: 12vh; opacity: 0.5; }
+#image{ position: absolute; left: 0px; bottom: 0px; max-width: 6vw; max-height: 12vh; opacity: 0.5; }
+#canvas{ position: fixed; right: 0px; top: 0px; }
+
+/*  position: fixed; */
+#view{ bottom: 0px; width: 100%; 
+    font-family: serif; font-size: 12px; line-height: 1em; letter-spacing:0px; word-spacing:0px; text-align: center; z-index: 2;
+    /* transform: scale(0.8); */
+}
+#tool{ position: fixed; bottom: 0px; right: 0px; padding: 10px; text-align: right; z-index: 10; }
+.stats{ position: fixed; top: 0px; z-index: 100; }

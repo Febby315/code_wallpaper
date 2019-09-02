@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>字符画 v3</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- cdn.staticfile.org -> cdnjs.loli.net/ajax/libs -->
+    <script src="//cdnjs.loli.net/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
+    <script src="//cdnjs.loli.net/ajax/libs/stats.js/r16/Stats.min.js"></script>
+    <script src="//cdnjs.loli.net/ajax/libs/hls.js/0.12.4/hls.light.min.js"></script>
+    <script src="//cdnjs.loli.net/ajax/libs/flv.js/1.5.0/flv.min.js"></script>
+    <script src="//cdnjs.loli.net/ajax/libs/vue/2.6.10/vue.min.js"></script>
+    <script src="//cdnjs.loli.net/ajax/libs/dot/1.1.2/doT.min.js"></script>
+    <script src="//cdnjs.loli.net/ajax/libs/purl/2.3.1/purl.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="box">
+            <!-- x5-video-player-type="h5" -->
+            <!-- preload controls  -->
+            <!-- @loadedmetadata="loadedmetadata($event)" -->
+            <!-- x5-video-player-fullscreen="ture" -->
+            <!-- playsinline webkit-playsinline x5-playsinline  -->
+            <video controls ref="video" id="video" :src="src" @canplay="canplay($event)" @loadedmetadata="loadedmetadata($event)" @play="play($event)" @pause="pause($event)" @ended="pause($event)" autoplay></video>
+            <img ref="image" id="image" @load="imgLoaded($event)"></img>
+            <canvas ref="canvas" id="canvas"></canvas>
+        </div>
+        <div ref="view" id="view" v-html="content"></div>
+        <div ref="tool" id="tool">
+            <input ref="file" id="file" type="file" @change="fileChange($event)" hidden>
+            <button type="button" @click="$refs.file.click();">图片/视频</button>
+            <button type="button" @click="videoPlay($event)">播放/暂停</button>
+            <!-- <button type="button" @click="playCacheFrame();" v-show="enableCache">播放缓存</button> -->
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>
