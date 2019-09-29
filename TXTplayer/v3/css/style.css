@@ -6,11 +6,11 @@
 html{ font-family: monospace; background: #000 var(--pic-view-bg) fixed;  }
 html,body,#app{ margin: 0px; padding: 0px; width: 100%; height: 100%; overflow: hidden; }
 #app{ display: flex; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.3); color: #fff; }
-.box{ display: none; }
-#video{ position: absolute; left: 0px; top: 0px; max-width: 6vw; max-height: 12vh; opacity: 0.5; }
-#image{ position: absolute; left: 0px; bottom: 0px; max-width: 6vw; max-height: 12vh; opacity: 0.5; }
-#canvas{ position: fixed; right: 0px; top: 0px; }
-/*  position: fixed; */
+.box{ display: none; opacity: 0.5; }
+.video{ position: absolute; left: 0px; top: 0px; max-width: 6vw; max-height: 12vh; }
+.image{ position: absolute; left: 0px; bottom: 0px; max-width: 6vw; max-height: 12vh; }
+.canvas{ position: fixed; right: 0px; top: 0px; }
+/* position: fixed; */
 #view{ bottom: 0px; width: 100%; 
     font-family: monospace; font-size: 12px; line-height: 1em; letter-spacing:0px; word-spacing:0px; text-align: center; z-index: 2;
     /* transform: scale(0.8); */

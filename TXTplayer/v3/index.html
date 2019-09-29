@@ -14,22 +14,23 @@
     <script src="//cdnjs.loli.net/ajax/libs/vue/2.6.10/vue.min.js"></script>
     <script src="//cdnjs.loli.net/ajax/libs/dot/1.1.2/doT.min.js"></script>
     <script src="//cdnjs.loli.net/ajax/libs/purl/2.3.1/purl.min.js"></script>
+    <script src="lib/libgif-js/libgif.js"></script>
 </head>
 <body>
     <div id="app">
         <div class="box">
             <!-- x5-video-player-type="h5" -->
-            <!-- preload controls  -->
+            <!-- preload autoplay controls  -->
             <!-- @loadedmetadata="loadedmetadata($event)" -->
             <!-- x5-video-player-fullscreen="ture" -->
             <!-- playsinline webkit-playsinline x5-playsinline  -->
-            <video controls ref="video" id="video" :src="src" @canplay="canplay($event)" @loadedmetadata="loadedmetadata($event)" @play="play($event)" @pause="pause($event)" @ended="pause($event)" autoplay></video>
-            <img ref="image" id="image" @load="imgLoaded($event)"></img>
-            <canvas ref="canvas" id="canvas"></canvas>
+            <video ref="video" class="video" @canplay="canplay($event)" @loadedmetadata="loadedmetadata($event)" @play="play($event)" @pause="pause($event)" @ended="pause($event)" autoplay></video>
+            <img ref="image" class="image" @load="imgLoaded($event)"></img>
+            <canvas ref="canvas" class="canvas"></canvas>
         </div>
-        <div ref="view" id="view" v-html="content"></div>
-        <div ref="tool" id="tool">
-            <input ref="file" id="file" type="file" @change="fileChange($event)" hidden>
+        <div id="view" ref="view" v-html="content" :style="viewStyle"></div>
+        <div id="tool" ref="tool">
+            <input id="file" ref="file" type="file" @change="fileChange($event)" hidden>
             <button type="button" @click="$refs.file.click();">图片/视频</button>
             <button type="button" @click="videoPlay($event)">播放/暂停</button>
         </div>

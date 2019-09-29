@@ -1,25 +1,13 @@
 const getImageBlob = function(url, cb) {
-    var img = new Image();
-    img.setAttribute('crossOrigin', 'anonymous');
-    var canvas = document.createElement("canvas");
-    var ctx = canvas.getContext('2d');
-    img.onload = function () {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
-        canvas.toBlob(function(blob){ cb(URL.createObjectURL(blob)); });
-    }
-    img.src = url;
-
-    // var xhr = new XMLHttpRequest();
-    // xhr.open('get', url, true);
-    // xhr.responseType = 'blob';
-    // xhr.onload = function () {
-    //     if (this.status == 200) {
-    //         cb(URL.createObjectURL(this.response));
-    //     }
-    // };
-    // xhr.send();
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', url, true);
+    xhr.responseType = 'blob';
+    xhr.onload = function () {
+        if (this.status == 200) {
+            cb(URL.createObjectURL(this.response));
+        }
+    };
+    xhr.send();
 }
 
 $(function(){
@@ -27,24 +15,25 @@ $(function(){
     var v_app = window.v_app = new Vue({
         el: "#app",
         data: {
-            // image: new Image(),
             src: "",
             flvsrc: "//aliyun-flv.yy.com/live/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0-96597708953498332-96597708953498333-2-2748477-33.flv?codec=orig&secret=bec0e1c80fad166895855545ff4efc89&t=1562310185&appid=15013",
             m3u8src: "//proxy.hls.yy.com/livesystem/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0.m3u8?org=yyweb&uuid=d8cee895f547417d82b0e297118278c5&t=1547044198&tk=09b38b158a6ba249a511d6e81ff9f189",
             content: null,// 视图html内容
+            timer: null, //定时器索引
             range: document.createRange(),// 用于通过TagString创建虚拟dom(DocumentFragment)节点
             stats: new Stats(),// 性能监视器:含fps、耗时ms、内存分配
             showStats: !true,//显示统计信息
             enableColor: !true,// 启用输出色彩
-            reverseColor: true,// 启用反色
+            reverseColor: true,// 启用反色 TODO
             // 拉伸/自适应
             fps: 30,// fps(流畅度)
-            fontSize: parseInt($("#view").css("font-size")),// 视图容器字体大小
+            fontSize: parseInt($("#view").css("font-size"))||12,// 视图容器字体大小
             chars: ['&ensp;', '.', ':', 'i', 't', 'd', 'k', 'w', '$', '@'],// 映射字符集
             sw: $(window).width(), sh: $(window).height(),// 存储屏幕宽高(含初始化)
             sourceScale: 1, // 默认素材宽高比
             currRowTempFn: null, // 行模板
             currFrameTempFn: null,// 帧模板
+            scale: 1, //画面缩放 TODO
         },
         // 动态计算
         computed:{
@@ -72,6 +61,11 @@ $(function(){
             // 画面帧间隔时间ms
             fpsStep: function(){
                 return 1000 / this.fps;
+            },
+            viewStyle: function(){
+                return {
+                    transform: 'scale('+this.scale+')'
+                }
             }
         },
         mounted: function () {
@@ -79,24 +73,28 @@ $(function(){
             this.$nextTick(function(){
                 this.initStats(); // 初始化统计工具
                 this.src = purl().param("src")||"video/v.mp4";
+                this.scale = parseFloat(purl().param("scale")||1);
                 this.enableColor = !!~~purl().param("enableColor");
-                // this.src = this.flvsrc; // flv
-                // this.src = this.m3u8src; // m3u8
             });
             // 窗口大小改变
-            $(window).on("resize",this.resetToCharsConfig);
+            window.onresize = this.resetToCharsConfig;
         },
         // 数据监听
         watch: {
             src: function(nv, ov){
-                let video = this.$refs.video;
+                let video = this.$refs.video, canvas = this.$refs.canvas;
+                let ctx = canvas.getContext('2d');
+                this.timer ? clearInterval(this.timer) : null; //移除定时器
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // 清除画布
                 var ext = purl(nv).attr("file").split(".").pop();
-                switch(ext){
-                    case "flv": this.loadFlv(nv); break;
-                    case "m3u8": this.loadHls(nv); break;
-                    case "jpg": this.loadImage(nv); break;
-                    case "png": this.loadImage(nv); break;
+                switch(String("ext").toLowerCase()){
+                    case "flv": this.loadFlv(nv, ext); break;
+                    case "m3u8": this.loadHls(nv, ext); break;
+                    case "jpg": this.loadImage(nv, ext); break;
+                    case "png": this.loadImage(nv, ext); break;
+                    case "gif": this.loadImage(nv, ext); break;
                     default: video.src = nv; break;
+                    // default: this.loadImage(nv); break;
                 }
                 this.$nextTick(function(){
                     this.$refs.video.load();
@@ -130,7 +128,7 @@ $(function(){
                     callback instanceof Function ? callback(hls) : null;
                 }
             },
-            // 加载图片链接地址
+            // 加载静态图片链接地址
             loadImage: function(src, callback){
                 let image = this.$refs.image;
                 getImageBlob(src, function (url) {
@@ -191,29 +189,34 @@ $(function(){
                 }
 
                 // console.log("最终canvas宽高", canvas.width, canvas.height);
-                // 生成帧模版
-                this.currFrameTempFn = this.frameTempFn();
-                // 生成行模版
-                this.currRowTempFn = this.rowTempFn();
+                this.currRowTempFn = this.rowTempFn(); // 生成行模版
+                this.currFrameTempFn = this.frameTempFn(); // 生成帧模版
+            },
+            // 绘制canvas
+            drawCanvas: function(ctx, ele){
+                const canvas = this.$refs.canvas;
+                ctx.drawImage(ele, 0, 0, canvas.width, canvas.height); // 绘制图像
+                this.toFrameData(ctx, canvas.width, canvas.height, this.update); // 将画布图像数据转换为字符画
             },
             // 更新画面
             update: function(frameData){
                 let _this = this;
                 // 方法一
-                // let frame = frameData.map(function(e){
-                //     return _this.currRowTempFn(e);
-                // }).join("<br/>\n");
+                let frame = frameData.map(function(e){
+                    return _this.currRowTempFn(e);
+                }).join("<br/>\n");
                 // 方法二
-                let frame = this.currFrameTempFn(frameData); //RangeError: Maximum call stack size exceeded(超出堆栈上限)
+                // let frame = this.currFrameTempFn(frameData); //RangeError: Maximum call stack size exceeded(超出堆栈上限)
                 // 方法三
                 // let view = this.$refs.view;
                 // var fragment = this.range.createContextualFragment(frame);
                 // view.innerHtml = null;
                 // view.appendChild(fragment);
                 this.content = frame; // 渲染画面
+                // 触发性能统计
                 this.$nextTick(function(){
                     this.stats.update();
-                }); // 触发性能统计
+                });
             },
             // 图像转字符画数据
             toFrameData: function(ctx, cw, ch, callback) {
@@ -239,21 +242,22 @@ $(function(){
             initStats: function(){
                 if(this.showStats){
                     this.stats.domElement.className = "stats";
-                    $("body").append(this.stats.domElement);
+                    let tool = document.getElementById("tool");
+                    tool && tool.appendChild(this.stats.domElement);
                 }
             },
 
             // vue事件
             // 文件更改时修改视频源
             fileChange: function(e){
-                let file = this.$refs.file;
+                let file = this.$refs.file, image = this.$refs.image;
                 if(file.files[0]){
-                    window.timer ? clearInterval(window.timer) : null;
                     this.src = URL.createObjectURL(file.files[0]);
                     // 兼容图片
-                    let type=file.files[0].type;
+                    let type = file.files[0].type;
                     if(type.split("/")[0]==="image"){
-                        this.$refs.image.src = this.src;
+                        image.src = this.src;
+                        image.setAttribute("data-type", type);
                     }
                 }
             },
@@ -271,16 +275,26 @@ $(function(){
                 this.sourceScale = video.videoWidth/video.videoHeight;
                 this.resetToCharsConfig();
             },
+            
             // 图片加载成功
             imgLoaded: function(e){
                 let image = this.$refs.image;
-                let canvas = this.$refs.canvas;
                 this.sourceScale = image.width/image.height;
                 this.resetToCharsConfig();
+                // 开始渲染
+                let _this = this, canvas = this.$refs.canvas;
                 let ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height); // 清除画布
-                ctx.drawImage(image, 0, 0, canvas.width, canvas.height); // 绘制图像
-                this.toFrameData(ctx, canvas.width, canvas.height, this.update); // 将画布图像数据转换为字符画
+                this.drawCanvas(ctx, image);
+                // gif支持
+                if(["image/gif"].includes(image.getAttribute("data-type"))){
+                    var rub = new SuperGif({ gif: image, progressbar_height: 0 });
+                    rub.load(function(){
+                        let gifCanvas = rub.get_canvas();
+                        _this.timer = setInterval(function(){
+                            _this.drawCanvas(ctx, gifCanvas)
+                        }, _this.fpsStep);
+                    });
+                }
             },
             // 播放按钮点击事件
             videoPlay: function(e){
@@ -289,18 +303,17 @@ $(function(){
             },
             // 视频播放事件
             play: function(e){
-                let video = this.$refs.video, canvas = this.$refs.canvas;
-                let _this = this, ctx = canvas.getContext('2d');
-                window.timer = setInterval(function (){
+                let _this = this, video = this.$refs.video, canvas = this.$refs.canvas;
+                let ctx = canvas.getContext('2d');
+                this.timer = setInterval(function (){
                     if(!video.paused){
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height); // 将视频当前帧画面绘制至画布
-                        _this.toFrameData(ctx, canvas.width, canvas.height, _this.update); // 将画布图像数据转换为字符画
+                        _this.drawCanvas(ctx, video);
                     }
                 }, _this.fpsStep);
             },
             // 视频暂停/停止事件
             pause: function(e){
-                clearInterval(window.timer); // 视频暂停或结束停止定时器
+                clearInterval(this.timer); // 视频暂停或结束停止定时器
                 e.type=="ended" ? this.content=null : null; // 结束播放清除视图
                 $("#tool").show(); // 显示工具栏
             },
