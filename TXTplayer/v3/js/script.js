@@ -87,7 +87,7 @@ $(function(){
                 this.timer ? clearInterval(this.timer) : null; //移除定时器
                 ctx.clearRect(0, 0, canvas.width, canvas.height); // 清除画布
                 var ext = purl(nv).attr("file").split(".").pop();
-                switch(String("ext").toLowerCase()){
+                switch(String(ext).toLowerCase()){
                     case "flv": this.loadFlv(nv, ext); break;
                     case "m3u8": this.loadHls(nv, ext); break;
                     case "jpg": this.loadImage(nv, ext); break;
