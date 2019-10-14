@@ -286,7 +286,6 @@ $(function(){
             loadedmetadata: function(e){
                 let video = this.$refs.video;
                 this.sourceScale = video.videoWidth/video.videoHeight || this.screenScale;
-                console.log("loadedmetadata", this.sourceScale);
                 this.resetToCharsConfig();
             },
             // play 视频播放事件
