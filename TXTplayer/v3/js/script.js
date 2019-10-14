@@ -248,7 +248,7 @@ $(function(){
             },
 
             // vue事件
-            // 文件更改时修改视频源
+            // fileChange 文件更改时修改视频源
             fileChange: function(e){
                 let file = this.$refs.file, image = this.$refs.image;
                 if(file.files[0]){
@@ -261,22 +261,7 @@ $(function(){
                     }
                 }
             },
-            // 媒体元数据加载
-            loadedmetadata: function(e){
-                let video = this.$refs.video;
-                // console.log("loadedmetadata", video.videoWidth, video.videoHeight);
-                this.sourceScale = video.videoWidth/video.videoHeight;
-                this.resetToCharsConfig();
-            },
-            // 媒体可播放
-            canplay: function(e){
-                let video = this.$refs.video;
-                // console.log("canplay", video.videoWidth, video.videoHeight);
-                this.sourceScale = video.videoWidth/video.videoHeight;
-                this.resetToCharsConfig();
-            },
-            
-            // 图片加载成功
+            // imgLoaded 图片加载成功
             imgLoaded: function(e){
                 let image = this.$refs.image;
                 this.sourceScale = image.width/image.height;
@@ -296,12 +281,15 @@ $(function(){
                     });
                 }
             },
-            // 播放按钮点击事件
-            videoPlay: function(e){
+            // canplay 媒体可播放
+            // loadedmetadata 媒体元数据加载
+            loadedmetadata: function(e){
                 let video = this.$refs.video;
-                video.paused?video.play():video.pause();
+                this.sourceScale = video.videoWidth/video.videoHeight || this.screenScale;
+                console.log("loadedmetadata", this.sourceScale);
+                this.resetToCharsConfig();
             },
-            // 视频播放事件
+            // play 视频播放事件
             play: function(e){
                 let _this = this, video = this.$refs.video, canvas = this.$refs.canvas;
                 let ctx = canvas.getContext('2d');
@@ -311,11 +299,16 @@ $(function(){
                     }
                 }, _this.fpsStep);
             },
-            // 视频暂停/停止事件
+            // pause 视频暂停/停止事件
             pause: function(e){
                 clearInterval(this.timer); // 视频暂停或结束停止定时器
                 e.type=="ended" ? this.content=null : null; // 结束播放清除视图
                 $("#tool").show(); // 显示工具栏
+            },
+            // videoPlay 播放按钮点击事件
+            videoPlay: function(e){
+                let video = this.$refs.video;
+                video.paused?video.play():video.pause();
             },
         }
     });
