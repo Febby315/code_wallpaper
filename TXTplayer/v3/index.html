@@ -24,7 +24,7 @@
             <!-- playsinline webkit-playsinline x5-playsinline  -->
             <!-- x5-video-player-type="h5" x5-video-player-fullscreen="ture" -->
             <video ref="video" class="video" @loadedmetadata="loadedmetadata($event)" @play="play($event)" @pause="pause($event)" @ended="pause($event)" autoplay></video>
-            <img ref="image" class="image" @load="imgLoaded($event)"></img>
+            <img ref="image" class="image" @load="imgLoaded($event)" />
             <canvas ref="canvas" class="canvas"></canvas>
         </div>
         <div id="view" ref="view" v-html="content" :style="viewStyle"></div>
