@@ -11,6 +11,9 @@ const getImageBlob = function(url, cb) {
 }
 
 $(function(){
+    const u = navigator.userAgent;
+    const isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+    const space = isAndroid? '&nbsp;' : '&ensp;';
     // 利用vue虚拟DOM技术加速DOM节点数据渲染
     var v_app = window.v_app = new Vue({
         el: "#app",
@@ -28,7 +31,7 @@ $(function(){
             // 拉伸/自适应
             fps: 30,// fps(流畅度)
             fontSize: parseInt($("#view").css("font-size"))||12,// 视图容器字体大小
-            chars: ['&ensp;', '.', ':', 'i', 't', 'd', 'k', 'w', '$', '@'],// 映射字符集
+            chars: [space, '.', ':', ';', '!', 'i', 'c', 'e', 'm', '@'],// 映射字符集;
             sw: $(window).width(), sh: $(window).height(),// 存储屏幕宽高(含初始化)
             sourceScale: 1, // 默认素材宽高比
             currRowTempFn: null, // 行模板
