@@ -5,7 +5,7 @@
 /*  */
 html{ font-family: monospace; background: #000 var(--pic-view-bg) fixed;  }
 html,body,#app{ margin: 0px; padding: 0px; width: 100%; height: 100%; overflow: hidden; }
-#app{ display: flex; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.3); color: #fff; }
+#app{ display: flex; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.25); color: #fff; }
 .box{ display: none; opacity: 0.5; }
 .video{ position: absolute; left: 0px; top: 0px; max-width: 6vw; max-height: 12vh; }
 .image{ position: absolute; left: 0px; bottom: 0px; max-width: 6vw; max-height: 12vh; }

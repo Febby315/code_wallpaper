@@ -22,12 +22,11 @@ $(function(){
             flvsrc: "//aliyun-flv.yy.com/live/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0-96597708953498332-96597708953498333-2-2748477-33.flv?codec=orig&secret=bec0e1c80fad166895855545ff4efc89&t=1562310185&appid=15013",
             m3u8src: "//ivi.bupt.edu.cn/hls/hunanhd.m3u8",
             content: null, // 视图html内容
-            timer: null, //定时器索引
+            timer: null, // 定时器索引
             range: document.createRange(), // 用于通过TagString创建虚拟dom(DocumentFragment)节点
             stats: new Stats(), // 性能监视器:含fps、耗时ms、内存分配
-            showStats: true, //显示统计信息
+            showStats: !true, // 显示统计信息
             enableColor: !true, // 启用输出色彩
-            reverseColor: true, // 启用反色 TODO
             // 拉伸/自适应
             fps: 30, // fps(流畅度)
             fontSize: parseInt($("#view").css("font-size"))||12, // 视图容器字体大小
@@ -36,7 +35,7 @@ $(function(){
             sourceScale: 1, // 默认素材宽高比
             currRowTempFn: null, // 行模板
             currFrameTempFn: null, // 帧模板
-            scale: 1, //画面缩放 TODO
+            scale: 1, // 画面缩放 TODO
         },
         // 动态计算
         computed:{
@@ -74,7 +73,7 @@ $(function(){
         mounted: function () {
             this.$nextTick(function(){
                 this.initStats(); // 初始化统计工具
-                this.src = purl().param("src")||"video/v.mp4";
+                this.src = purl().param("src") || "video/v.mp4";
                 this.scale = parseFloat(purl().param("scale")||1);
                 this.enableColor = !!~~purl().param("enableColor");
             });
@@ -85,7 +84,7 @@ $(function(){
             src: function(nv, ov){
                 let video = this.$refs.video, canvas = this.$refs.canvas;
                 let ctx = canvas.getContext('2d');
-                this.timer ? clearInterval(this.timer) : null; //移除定时器
+                this.timer ? clearInterval(this.timer) : null; // 移除定时器
                 ctx.clearRect(0, 0, canvas.width, canvas.height); // 清除画布
                 var ext = purl(nv).attr("file").split(".").pop();
                 switch(String(ext).toLowerCase()){
@@ -197,7 +196,7 @@ $(function(){
             },
             // 更新画面
             update: function(frameData){
-                let _this = this;
+                let _this = this, view = this.$refs.view;
                 // 方法一
                 let frame = frameData.map(function(e){
                     return _this.currRowTempFn(e);
@@ -205,13 +204,12 @@ $(function(){
                 // 方法二
                 // let frame = this.currFrameTempFn(frameData); //RangeError: Maximum call stack size exceeded(超出堆栈上限)
                 // 方法三
-                // let view = this.$refs.view;
                 // var fragment = this.range.createContextualFragment(frame);
                 // view.innerHtml = null;
                 // view.appendChild(fragment);
                 this.content = frame; // 渲染画面
                 this.$nextTick(function(){
-                    this.stats.update();// 触发性能统计
+                    this.showStats && this.stats.update();// 触发性能统计
                 });
             },
             // 图像转字符画数据
