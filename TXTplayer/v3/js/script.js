@@ -20,22 +20,22 @@ $(function(){
         data: {
             src: "",
             flvsrc: "//aliyun-flv.yy.com/live/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0-96597708953498332-96597708953498333-2-2748477-33.flv?codec=orig&secret=bec0e1c80fad166895855545ff4efc89&t=1562310185&appid=15013",
-            m3u8src: "//proxy.hls.yy.com/livesystem/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0.m3u8?org=yyweb&uuid=d8cee895f547417d82b0e297118278c5&t=1547044198&tk=09b38b158a6ba249a511d6e81ff9f189",
-            content: null,// 视图html内容
+            m3u8src: "//ivi.bupt.edu.cn/hls/hunanhd.m3u8",
+            content: null, // 视图html内容
             timer: null, //定时器索引
-            range: document.createRange(),// 用于通过TagString创建虚拟dom(DocumentFragment)节点
-            stats: new Stats(),// 性能监视器:含fps、耗时ms、内存分配
-            showStats: !true,//显示统计信息
-            enableColor: !true,// 启用输出色彩
-            reverseColor: true,// 启用反色 TODO
+            range: document.createRange(), // 用于通过TagString创建虚拟dom(DocumentFragment)节点
+            stats: new Stats(), // 性能监视器:含fps、耗时ms、内存分配
+            showStats: true, //显示统计信息
+            enableColor: !true, // 启用输出色彩
+            reverseColor: true, // 启用反色 TODO
             // 拉伸/自适应
-            fps: 30,// fps(流畅度)
-            fontSize: parseInt($("#view").css("font-size"))||12,// 视图容器字体大小
-            chars: [space, '.', ':', ';', '!', 'i', 'c', 'e', 'm', '@'],// 映射字符集;
-            sw: $(window).width(), sh: $(window).height(),// 存储屏幕宽高(含初始化)
+            fps: 30, // fps(流畅度)
+            fontSize: parseInt($("#view").css("font-size"))||12, // 视图容器字体大小
+            chars: [space, '.', ':', ';', '!', 'i', 'c', 'e', 'm', '@'], // 映射字符集;
+            sw: $(window).width(), sh: $(window).height(), // 存储屏幕宽高(含初始化)
             sourceScale: 1, // 默认素材宽高比
             currRowTempFn: null, // 行模板
-            currFrameTempFn: null,// 帧模板
+            currFrameTempFn: null, // 帧模板
             scale: 1, //画面缩放 TODO
         },
         // 动态计算
@@ -72,15 +72,13 @@ $(function(){
             }
         },
         mounted: function () {
-             // 初始化结束后// 开始位置
             this.$nextTick(function(){
                 this.initStats(); // 初始化统计工具
                 this.src = purl().param("src")||"video/v.mp4";
                 this.scale = parseFloat(purl().param("scale")||1);
                 this.enableColor = !!~~purl().param("enableColor");
             });
-            // 窗口大小改变
-            window.onresize = this.resetToCharsConfig;
+            window.onresize = this.resetToCharsConfig; // 窗口大小改变
         },
         // 数据监听
         watch: {
@@ -97,10 +95,9 @@ $(function(){
                     case "png": this.loadImage(nv, ext); break;
                     case "gif": this.loadImage(nv, ext); break;
                     default: video.src = nv; break;
-                    // default: this.loadImage(nv); break;
                 }
                 this.$nextTick(function(){
-                    this.$refs.video.load();
+                    video.load();
                 });
             },
             enableColor: function(nv, ov){
@@ -171,24 +168,21 @@ $(function(){
                 // 采集屏幕宽高
                 this.sw = $(window).width();
                 this.sh = $(window).height();
-                let maxCol = this.maxCol, maxRow = this.maxRow;
-                // console.log("最大允许 宽:%s 高:%s ", maxCol, maxRow);
+                // console.log("最大允许 宽:%s 高:%s ", this.maxCol, this.maxRow);
+                // console.log("素材比屏幕宽?(%s) 素材宽高比:%s 屏幕宽高比:%s", this.sourceScale>this.screenScale, this.sourceScale, this.screenScale);
                 // 拉伸模式
-                // canvas.width = maxCol;
-                // canvas.height = maxRow;
+                // canvas.width = this.maxCol;
+                // canvas.height = this.maxRow;
 
                 // 自适应模式
-                // console.log("素材比屏幕宽?(%s) 素材宽高比:%s 屏幕宽高比:%s", this.sourceScale>this.screenScale, this.sourceScale, this.screenScale);
-                if(this.sourceScale>this.screenScale){
-                    // 宽度自适应
-                    canvas.width = maxCol;
+                if(this.sourceScale > this.screenScale){
+                    canvas.width = this.maxCol;// 宽度自适应
                     // 在宽度自适应情况下高度/2与宽度保持比例(因字体高度是宽度的2倍, 为保证画面与素材保持正确比例)
-                    canvas.height = maxCol / this.sourceScale / 2;
+                    canvas.height = this.maxCol / this.sourceScale / 2;
                 }else{
-                    // 高度自适应
-                    canvas.height = maxRow;
+                    canvas.height = this.maxRow;// 高度自适应
                     // 在高度自适应情况下宽度*2与高度保持比例(因字体高度是宽度的2倍, 为保证画面与素材保持正确比例)
-                    canvas.width = maxRow * this.sourceScale * 2;
+                    canvas.width = this.maxRow * this.sourceScale * 2;
                 }
 
                 // console.log("最终canvas宽高", canvas.width, canvas.height);
@@ -216,9 +210,8 @@ $(function(){
                 // view.innerHtml = null;
                 // view.appendChild(fragment);
                 this.content = frame; // 渲染画面
-                // 触发性能统计
                 this.$nextTick(function(){
-                    this.stats.update();
+                    this.stats.update();// 触发性能统计
                 });
             },
             // 图像转字符画数据
@@ -233,13 +226,15 @@ $(function(){
                         let p = { R: 0, G: 0, B: 0 };
                         p.R = ~~imgDate[idx], p.G = ~~imgDate[idx+1], p.B = ~~imgDate[idx+2];
                         // 获取区域平均灰度及平均RGB色彩值 为提高效率将单像素灰度计算中的除以100提出
-                        let Gray = ~~( (p.R*30 + p.G*59 + p.B*11 + 50)/100 );
+                        // let Gray = ~~( (p.R*30 + p.G*59 + p.B*11 + 50)/100 );
+                        // https://www.cnblogs.com/zhangjiansheng/p/6925722.html
+                        let Gray = (p.R*38 + p.G*75 + p.B*15) >> 7;
                         p.T = this.charMap[Gray]; // 映射灰度字符
                         colArray.push(p); // 行数据
                     }
                     rowArray.push(colArray); // 帧数据
                 };
-                callback instanceof Function ? callback(rowArray) : null;
+                if (callback instanceof Function) callback(rowArray);
             },
             // 初始化统计工具
             initStats: function(){
@@ -279,7 +274,7 @@ $(function(){
                     rub.load(function(){
                         let gifCanvas = rub.get_canvas();
                         _this.timer = setInterval(function(){
-                            _this.drawCanvas(ctx, gifCanvas)
+                            _this.drawCanvas(ctx, gifCanvas);
                         }, _this.fpsStep);
                     });
                 }
