@@ -1,11 +1,9 @@
-const getImageBlob = function(url, cb) {
+const getImageBlob = function(url, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open('get', url, true);
     xhr.responseType = 'blob';
     xhr.onload = function () {
-        if (this.status == 200) {
-            cb(URL.createObjectURL(this.response));
-        }
+        if (this.status == 200 && callback instanceof Function) callback(URL.createObjectURL(this.response));
     };
     xhr.send();
 }
@@ -303,7 +301,7 @@ $(function(){
             // videoPlay 播放按钮点击事件
             videoPlay: function(e){
                 let video = this.$refs.video;
-                video.paused?video.play():video.pause();
+                video.paused ? video.play() : video.pause();
             },
         }
     });
