@@ -62,18 +62,23 @@ $(function(){
             fpsStep: function(){
                 return 1000 / this.fps;
             },
+            viewClass: function(){
+                return {
+                    shadow: purl().param("enableShadow")
+                }
+            },
             viewStyle: function(){
                 return {
                     transform: 'scale('+this.scale+')'
                 }
-            }
+            },
         },
         mounted: function () {
             this.$nextTick(function(){
                 this.initStats(); // 初始化统计工具
                 this.src = purl().param("src") || "video/v.mp4";
                 this.scale = parseFloat(purl().param("scale")||1);
-                this.enableColor = !!~~purl().param("enableColor");
+                this.enableColor = purl().param("enableColor");
             });
             window.onresize = this.resetToCharsConfig; // 窗口大小改变
         },

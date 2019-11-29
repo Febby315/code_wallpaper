@@ -27,7 +27,7 @@
             <img ref="image" class="image" @load="imgLoaded($event)" />
             <canvas ref="canvas" class="canvas"></canvas>
         </div>
-        <div id="view" ref="view" v-html="content" :style="viewStyle"></div>
+        <div id="view" ref="view" v-html="content" :class="viewClass" :style="viewStyle"></div>
         <div id="tool" ref="tool">
             <input id="file" ref="file" type="file" @change="fileChange($event)" hidden>
             <button type="button" @click="$refs.file.click();">图片/视频</button>
