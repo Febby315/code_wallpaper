@@ -64,7 +64,7 @@ $(function(){
             },
             viewClass: function(){
                 return {
-                    shadow: purl().param("enableShadow")
+                    shadow: url("?enableShadow")
                 }
             },
             viewStyle: function(){
@@ -76,9 +76,9 @@ $(function(){
         mounted: function () {
             this.$nextTick(function(){
                 this.initStats(); // 初始化统计工具
-                this.src = purl().param("src") || "video/v.mp4";
-                this.scale = parseFloat(purl().param("scale")||1);
-                this.enableColor = purl().param("enableColor");
+                this.src = url("?src") || "video/v.mp4";
+                this.scale = parseFloat(url("?scale")||1);
+                this.enableColor = url("?enableColor");
             });
             window.onresize = this.resetToCharsConfig; // 窗口大小改变
         },
@@ -89,7 +89,7 @@ $(function(){
                 let ctx = canvas.getContext('2d');
                 this.timer ? clearInterval(this.timer) : null; // 移除定时器
                 ctx.clearRect(0, 0, canvas.width, canvas.height); // 清除画布
-                var ext = purl(nv).attr("file").split(".").pop();
+                var ext = url("fileext", nv);
                 switch(String(ext).toLowerCase()){
                     case "flv": this.loadFlv(nv, ext); break;
                     case "m3u8": this.loadHls(nv, ext); break;
