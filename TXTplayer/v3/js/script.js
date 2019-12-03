@@ -270,7 +270,7 @@ $(function(){
                 let ctx = canvas.getContext('2d');
                 this.drawCanvas(ctx, image);
                 // gif支持
-                if(["image/gif"].includes(image.getAttribute("data-type"))){
+                if(["image/gif"].indexOf(image.getAttribute("data-type")) !== -1){
                     var rub = new SuperGif({ gif: image, progressbar_height: 0 });
                     rub.load(function(){
                         let gifCanvas = rub.get_canvas();
