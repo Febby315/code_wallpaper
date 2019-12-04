@@ -25,6 +25,7 @@ $(function(){
             stats: new Stats(), // 性能监视器:含fps、耗时ms、内存分配
             showStats: !true, // 显示统计信息
             enableColor: !true, // 启用输出色彩
+            enableReverse: !true, // 启用色彩反转
             // 拉伸/自适应
             fps: 30, // fps(流畅度)
             fontSize: parseInt($("#view").css("font-size"))||12, // 视图容器字体大小
@@ -33,16 +34,15 @@ $(function(){
             sourceScale: 1, // 默认素材宽高比
             currRowTempFn: null, // 行模板
             currFrameTempFn: null, // 帧模板
-            scale: 1, // 画面缩放 TODO
         },
         // 动态计算
         computed:{
             // 配置灰度字符映射表
             charMap:function () {
-                let _this = this;
-                let len = 256, step = ~~(len/(this.chars.length-1)); // 映射步长=最大字符长度/映射字符长度
+                let _this = this, chars = !this.enableReverse ? this.chars : this.chars.reverse();
+                let len = 256, step = ~~(len/(chars.length-1)); // 映射步长=最大字符长度/映射字符长度
                 return Array.apply(null, Array(len)).map(function(v,i,c){
-                    return _this.chars[~~(i / step)];
+                    return chars[~~(i / step)];
                 });
             },
             // 屏幕宽高比
@@ -63,22 +63,24 @@ $(function(){
                 return 1000 / this.fps;
             },
             viewClass: function(){
-                return {
-                    shadow: url("?enableShadow")
-                }
+                let className = url("?className");
+                if (!Array.isArray(className)) className = [className];
+                className.push({
+                    reverse: url("?enableReverse") // 反转色彩
+                });
+                return className;
             },
             viewStyle: function(){
-                return {
-                    transform: 'scale('+this.scale+')'
-                }
+                let style = url("?style");
+                return style ? JSON.parse(style) : undefined;
             },
         },
         mounted: function () {
             this.$nextTick(function(){
                 this.initStats(); // 初始化统计工具
                 this.src = url("?src") || "video/v.mp4";
-                this.scale = parseFloat(url("?scale")||1);
                 this.enableColor = url("?enableColor");
+                this.enableReverse = url("?enableReverse");
             });
             window.onresize = this.resetToCharsConfig; // 窗口大小改变
         },
