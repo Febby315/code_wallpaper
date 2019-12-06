@@ -39,8 +39,8 @@ $(function(){
         computed:{
             // 配置灰度字符映射表
             charMap:function () {
-                let _this = this, chars = !this.enableReverse ? this.chars : this.chars.reverse();
-                let len = 256, step = ~~(len/(chars.length-1)); // 映射步长=最大字符长度/映射字符长度
+                var chars = !this.enableReverse ? this.chars : this.chars.reverse();
+                var len = 256, step = ~~(len/(chars.length-1)); // 映射步长=最大字符长度/映射字符长度
                 return Array.apply(null, Array(len)).map(function(v,i,c){
                     return chars[~~(i / step)];
                 });
@@ -55,7 +55,7 @@ $(function(){
             },
             // 屏幕允许最大列数
             maxCol: function(){
-                let fontWidth = this.fontSize / 2;
+                var fontWidth = this.fontSize / 2;
                 return ~~(this.sw / fontWidth);
             },
             // 画面帧间隔时间ms
@@ -63,7 +63,7 @@ $(function(){
                 return 1000 / this.fps;
             },
             viewClass: function(){
-                let className = url("?className");
+                var className = url("?className");
                 if (!Array.isArray(className)) className = [className];
                 className.push({
                     reverse: url("?enableReverse") // 反转色彩
@@ -71,7 +71,7 @@ $(function(){
                 return className;
             },
             viewStyle: function(){
-                let style = url("?style");
+                var style = url("?style");
                 return style ? JSON.parse(style) : undefined;
             },
         },
@@ -87,9 +87,9 @@ $(function(){
         // 数据监听
         watch: {
             src: function(nv, ov){
-                let video = this.$refs.video, canvas = this.$refs.canvas;
-                let ctx = canvas.getContext('2d');
+                var video = this.$refs.video, canvas = this.$refs.canvas;
                 this.timer ? clearInterval(this.timer) : null; // 移除定时器
+                var ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height); // 清除画布
                 var ext = url("fileext", nv);
                 switch(String(ext).toLowerCase()){
@@ -111,7 +111,7 @@ $(function(){
         methods: {
             // 加载Flv链接地址
             loadFlv: function(src, callback){
-                let video = this.$refs.video;
+                var video = this.$refs.video;
                 if (flvjs.isSupported()) {
                     var flvPlayer = flvjs.createPlayer({ type: 'flv', url: src });
                     flvPlayer.attachMediaElement(video);
@@ -123,7 +123,7 @@ $(function(){
             },
             // 加载Hls链接地址(m3u8)
             loadHls: function(src, callback){
-                let video = this.$refs.video;
+                var video = this.$refs.video;
                 if(Hls.isSupported()) {
                     var hls = new Hls();
                     hls.loadSource(src);
@@ -134,15 +134,15 @@ $(function(){
             },
             // 加载静态图片链接地址
             loadImage: function(src, callback){
-                let image = this.$refs.image;
+                var image = this.$refs.image;
                 getImageBlob(src, function (url) {
                     image.src = url;
                 });
             },
             // 实时生成行模板
             rowTempFn: function(){
-                let canvas = this.$refs.canvas , enableColor = this.enableColor ,templates = [];
-                for(let i=0;i<canvas.width;i++){
+                var canvas = this.$refs.canvas , enableColor = this.enableColor ,templates = [];
+                for(var i=0;i<canvas.width;i++){
                     if(!enableColor){
                         templates.push('{{=it['+i+'].T}}');
                     }else{
@@ -153,9 +153,9 @@ $(function(){
             },
             // 实时生成帧模板
             frameTempFn: function(){
-                let canvas = this.$refs.canvas, enableColor = this.enableColor, templates = [];
-                for(let i=0;i<canvas.height;i++){
-                    for(let j=0;j<canvas.width;j++){
+                var canvas = this.$refs.canvas, enableColor = this.enableColor, templates = [];
+                for(var i=0;i<canvas.height;i++){
+                    for(var j=0;j<canvas.width;j++){
                         if(!enableColor){
                             templates.push('{{=it['+i+']['+j+'].T}}');
                         }else{
@@ -168,7 +168,7 @@ $(function(){
             },
             // 重置采集参数
             resetToCharsConfig: function(){
-                let canvas = this.$refs.canvas;
+                var canvas = this.$refs.canvas;
                 // 采集屏幕宽高
                 this.sw = $(window).width();
                 this.sh = $(window).height();
@@ -201,13 +201,13 @@ $(function(){
             },
             // 更新画面
             update: function(frameData){
-                let _this = this, view = this.$refs.view;
+                var _this = this, view = this.$refs.view;
                 // 方法一
-                let frame = frameData.map(function(e){
+                var frame = frameData.map(function(e){
                     return _this.currRowTempFn(e);
                 }).join("<br/>\n");
                 // 方法二
-                // let frame = this.currFrameTempFn(frameData); //RangeError: Maximum call stack size exceeded(超出堆栈上限)
+                // var frame = this.currFrameTempFn(frameData); //RangeError: Maximum call stack size exceeded(超出堆栈上限)
                 // 方法三
                 // var fragment = this.range.createContextualFragment(frame);
                 // view.innerHtml = null;
@@ -219,19 +219,19 @@ $(function(){
             },
             // 图像转字符画数据
             toFrameData: function(ctx, cw, ch, callback) {
-                let image = ctx.getImageData(0, 0, cw, ch);
-                let imgDate = image.data ; // 当前画布图像数据
+                var image = ctx.getImageData(0, 0, cw, ch);
+                var imgDate = image.data ; // 当前画布图像数据
                 // 遍历每个字符画像素获取灰度值映射字符追加至字符画帧数据
-                let rowArray = [];
-                for (let i=0, idx=0; i<image.height; i++) {
-                    let colArray = [];
-                    for (let j=0; j<image.width; j++, idx+=4) {
-                        let p = { R: 0, G: 0, B: 0 };
+                var rowArray = [];
+                for (var i=0, idx=0; i<image.height; i++) {
+                    var colArray = [];
+                    for (var j=0; j<image.width; j++, idx+=4) {
+                        var p = { R: 0, G: 0, B: 0 };
                         p.R = ~~imgDate[idx], p.G = ~~imgDate[idx+1], p.B = ~~imgDate[idx+2];
                         // 获取区域平均灰度及平均RGB色彩值 为提高效率将单像素灰度计算中的除以100提出
-                        // let Gray = ~~( (p.R*30 + p.G*59 + p.B*11 + 50)/100 );
+                        // var Gray = ~~( (p.R*30 + p.G*59 + p.B*11 + 50)/100 );
                         // https://www.cnblogs.com/zhangjiansheng/p/6925722.html
-                        let Gray = (p.R*38 + p.G*75 + p.B*15) >> 7;
+                        var Gray = (p.R*38 + p.G*75 + p.B*15) >> 7;
                         p.T = this.charMap[Gray]; // 映射灰度字符
                         colArray.push(p); // 行数据
                     }
@@ -243,7 +243,7 @@ $(function(){
             initStats: function(){
                 if(this.showStats){
                     this.stats.domElement.className = "stats";
-                    let tool = document.getElementById("tool");
+                    var tool = document.getElementById("tool");
                     tool && tool.appendChild(this.stats.domElement);
                 }
             },
@@ -251,11 +251,11 @@ $(function(){
             // vue事件
             // fileChange 文件更改时修改视频源
             fileChange: function(e){
-                let file = this.$refs.file, image = this.$refs.image;
+                var file = this.$refs.file, image = this.$refs.image;
                 if(file.files[0]){
                     this.src = URL.createObjectURL(file.files[0]);
                     // 兼容图片
-                    let type = file.files[0].type;
+                    var type = file.files[0].type;
                     if(type.split("/")[0]==="image"){
                         image.src = this.src;
                         image.setAttribute("data-type", type);
@@ -264,18 +264,18 @@ $(function(){
             },
             // imgLoaded 图片加载成功
             imgLoaded: function(e){
-                let image = this.$refs.image;
+                var image = this.$refs.image;
                 this.sourceScale = image.width/image.height;
                 this.resetToCharsConfig();
                 // 开始渲染
-                let _this = this, canvas = this.$refs.canvas;
-                let ctx = canvas.getContext('2d');
+                var _this = this, canvas = this.$refs.canvas;
+                var ctx = canvas.getContext('2d');
                 this.drawCanvas(ctx, image);
                 // gif支持
                 if(["image/gif"].indexOf(image.getAttribute("data-type")) !== -1){
                     var rub = new SuperGif({ gif: image, progressbar_height: 0 });
                     rub.load(function(){
-                        let gifCanvas = rub.get_canvas();
+                        var gifCanvas = rub.get_canvas();
                         _this.timer = setInterval(function(){
                             _this.drawCanvas(ctx, gifCanvas);
                         }, _this.fpsStep);
@@ -285,14 +285,14 @@ $(function(){
             // canplay 媒体可播放
             // loadedmetadata 媒体元数据加载
             loadedmetadata: function(e){
-                let video = this.$refs.video;
+                var video = this.$refs.video;
                 this.sourceScale = video.videoWidth/video.videoHeight || this.screenScale;
                 this.resetToCharsConfig();
             },
             // play 视频播放事件
             play: function(e){
-                let _this = this, video = this.$refs.video, canvas = this.$refs.canvas;
-                let ctx = canvas.getContext('2d');
+                var _this = this, video = this.$refs.video, canvas = this.$refs.canvas;
+                var ctx = canvas.getContext('2d');
                 this.timer = setInterval(function (){
                     if(!video.paused){
                         _this.drawCanvas(ctx, video);
@@ -307,7 +307,7 @@ $(function(){
             },
             // videoPlay 播放按钮点击事件
             videoPlay: function(e){
-                let video = this.$refs.video;
+                var video = this.$refs.video;
                 video.paused ? video.play() : video.pause();
             },
         }
