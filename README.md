@@ -38,8 +38,8 @@ url参数说明
 |参数|默认值|可选值|说明|
 |:-:|:-:|:-:|:-:|
 |src|"video/v.mp4"|URI|资源链接地址必须允许跨域访问|
-|enableColor|false|Boolean(any)|启用彩色字符|
-|enableReverse|false|Boolean(any)|启用反转(仅反转灰度字符映射&前景色&背景色)|
+|enableColor|false|any|启用彩色字符|
+|enableReverse|false|any|启用反转(仅反转灰度字符映射&前景色&背景色)|
 |className|空|String\|Array\<String\>|暂只支持<br/>"shadow":红色阴影|
 |style|空|String|经过encodeURIComponent函数编码的JSON字符串|
 

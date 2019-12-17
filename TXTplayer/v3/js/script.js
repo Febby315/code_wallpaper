@@ -246,11 +246,11 @@ function onload(){
             update: function(frameData, frameVNode) {
                 var _this = this, view = this.$refs.view;
                 // 方法一 行模板渲染(相较方法二兼容更多浏览器,不易发生栈溢出)
-                // var frame = frameData.map(function(v) {
-                //     return _this.currRowTempFn(v);
-                // }).join("<br/>\n");
+                var frame = frameData.map(function(v) {
+                    return _this.currRowTempFn(v);
+                }).join("<br/>\n");
                 // 方法二 帧模板渲染(效率高但兼容差易超出堆栈上限: Maximum call stack size exceeded)
-                var frame = this.currFrameTempFn(frameData);
+                // var frame = this.currFrameTempFn(frameData);
                 // 方法三 字符模板渲染(效率仅次于方法一,兼容性好);
                 // var frame = this.renderFrame(frameData);
                 // 方法四 fragment预加载渲染(无法清除旧的innerHtml)
