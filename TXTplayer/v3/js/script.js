@@ -14,7 +14,7 @@ function onload(){
     const isAndroid = UA.indexOf('Android') > -1 || UA.indexOf('Adr') > -1; //android终端
     const space = isAndroid? '&nbsp;' : '&ensp;';
     // 利用vue虚拟DOM技术加速DOM节点数据渲染
-    var v_app = window.v_app = new Vue({
+    var v$app = window.v$app = new Vue({
         el: "#app",
         data: {
             src: "",
@@ -153,11 +153,11 @@ function onload(){
             rowTempFn: function(rowData) {
                 var canvas = this.$refs.canvas, templates = [];
                 if(this.enableColor) {
-                    for(var i = 0;i < canvas.width; i += 1) {
+                    for(var i = 0; i < canvas.width; i += 1) {
                         templates.push('<span style="color:rgb({{=it['+i+'].R}},{{=it['+i+'].G}},{{=it['+i+'].B}});">{{=it['+i+'].T}}</span>');
                     }
                 } else {
-                    for(var i = 0;i < canvas.width; i += 1) {
+                    for(var i = 0; i < canvas.width; i += 1) {
                         templates.push('{{=it['+i+'].T}}');
                     }
                 }
@@ -167,15 +167,15 @@ function onload(){
             frameTempFn: function() {
                 var canvas = this.$refs.canvas, templates = [];
                 if(this.enableColor) {
-                    for(var i=0;i<canvas.height;i++) {
-                        for(var j=0;j<canvas.width;j++) {
+                    for(var i = 0; i < canvas.height; i += 1) {
+                        for(var j = 0; j < canvas.width; j += 1) {
                             templates.push('<span style="color:rgb({{=it['+i+']['+j+'].R}},{{=it['+i+']['+j+'].G}},{{=it['+i+']['+j+'].B}});">{{=it['+i+']['+j+'].T}}</span>');
                         }
                         templates.push('<br/>\n');
                     }
                 } else {
-                    for(var i=0;i<canvas.height;i++) {
-                        for(var j=0;j<canvas.width;j++) {
+                    for(var i = 0; i < canvas.height; i += 1) {
+                        for(var j = 0; j < canvas.width; j += 1) {
                             templates.push('{{=it['+i+']['+j+'].T}}');
                         }
                         templates.push('<br/>\n');
@@ -224,9 +224,9 @@ function onload(){
                 var imgDate = image.data ; // 当前画布图像数据
                 // 遍历每个字符画像素获取灰度值映射字符追加至字符画帧数据
                 var rowArray = [], rowVNodes = [];
-                for (var i=0, idx=0; i<image.height; i++) {
+                for(var i = 0, idx = 0; i < image.height; i += 1) {
                     var colArray = [], colVNodes = [];
-                    for (var j=0; j<image.width; j++, idx+=4) {
+                    for(var j = 0; j < image.width; j += 1, idx += 4) {
                         var p = { R: 0, G: 0, B: 0 };
                         p.R = ~~imgDate[idx], p.G = ~~imgDate[idx+1], p.B = ~~imgDate[idx+2];
                         // 获取区域平均灰度及平均RGB色彩值 为提高效率将单像素灰度计算中的除以100提出
