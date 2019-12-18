@@ -234,13 +234,12 @@ function onload(){
                         var Gray = (p.R*38 + p.G*75 + p.B*15) >> 7;
                         p.T = this.charMap[Gray]; // 映射灰度字符
                         colArray.push(p); // 行数据
-                        colVNodes.push(Inferno.createElement('span', { style: styleTemplate(p) }, Inferno.createTextVNode(p.T)));
+                        // colVNodes.push(Inferno.createElement('span', { style: styleTemplate(p) }, Inferno.createTextVNode(p.T)));
                     }
                     rowArray.push(colArray); // 帧数据
-                    rowVNodes.push(Inferno.createElement('div', null, colVNodes));
+                    // rowVNodes.push(Inferno.createElement('div', null, colVNodes));
                 };
-                var VNode = Inferno.createElement('div', null, rowVNodes);
-                if(callback instanceof Function) callback(rowArray, VNode);
+                if(callback instanceof Function) callback(rowArray);// callback(rowArray, Inferno.createElement('div', null, rowVNodes))
             },
             // 更新画面
             update: function(frameData, frameVNode) {
@@ -254,9 +253,8 @@ function onload(){
                 // 方法三 字符模板渲染(效率仅次于方法一,兼容性好);
                 // var frame = this.renderFrame(frameData);
                 // 方法四 fragment预加载渲染(无法清除旧的innerHtml)
-                // var fragment = this.range.createContextualFragment(frame);
                 // view.innerHtml = null;
-                // view.appendChild(fragment);
+                // view.appendChild(this.range.createContextualFragment(frame));
                 // 方法五 Inferno差异化渲染(当前场景效率低)
                 // Inferno.render(frameVNode, view);
                 this.content = frame; // 渲染画面
