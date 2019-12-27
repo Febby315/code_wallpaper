@@ -10,6 +10,8 @@ const getImageBlob = function(url, callback) {
 
 // 页面body加载完成
 function onload(){
+    // const I$CE = Inferno.createElement;
+    // const R$CE = React.createElement;
     const UA = navigator.userAgent;
     const isAndroid = UA.indexOf('Android') > -1 || UA.indexOf('Adr') > -1; //android终端
     const space = isAndroid? '&nbsp;' : '&ensp;';
@@ -28,7 +30,7 @@ function onload(){
             enableColor: !!url("?enableColor"), // 启用输出色彩
             enableReverse: !!url("?enableReverse"), // 启用色彩反转
             // 拉伸/自适应
-            fps: 30, // fps(流畅度)
+            fps: 300, // fps(流畅度)
             fontSize: 12, // 视图容器字体大小
             chars: [space, '.', ':', ';', '!', 'i', 'c', 'e', 'm', '@'], // 映射字符集;
             styleTemplate: doT.template('color: rgb({{=it.R}},{{=it.G}},{{=it.B}});'), // 彩色字符style模板
@@ -218,28 +220,28 @@ function onload(){
             },
             // 图像转字符画数据
             toFrameData: function(ctx, cw, ch, callback) {
-                const canvas = this.$refs.canvas;
+                const _this = this, canvas = this.$refs.canvas;
                 const styleTemplate = this.styleTemplate;
                 var image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                var imgDate = image.data ; // 当前画布图像数据
-                // 遍历每个字符画像素获取灰度值映射字符追加至字符画帧数据
-                var rowArray = [], rowVNodes = [];
-                for(var i = 0, idx = 0; i < image.height; i += 1) {
-                    var colArray = [], colVNodes = [];
-                    for(var j = 0; j < image.width; j += 1, idx += 4) {
-                        var p = { R: 0, G: 0, B: 0 };
-                        p.R = ~~imgDate[idx], p.G = ~~imgDate[idx+1], p.B = ~~imgDate[idx+2];
-                        // 获取区域平均灰度及平均RGB色彩值 为提高效率将单像素灰度计算中的除以100提出
-                        // https://www.cnblogs.com/zhangjiansheng/p/6925722.html
-                        var Gray = (p.R*38 + p.G*75 + p.B*15) >> 7;
-                        p.T = this.charMap[Gray]; // 映射灰度字符
-                        colArray.push(p); // 行数据
-                        // colVNodes.push(Inferno.createElement('span', { style: styleTemplate(p) }, Inferno.createTextVNode(p.T)));
-                    }
-                    rowArray.push(colArray); // 帧数据
-                    // rowVNodes.push(Inferno.createElement('div', null, colVNodes));
-                };
-                if(callback instanceof Function) callback(rowArray);// callback(rowArray, Inferno.createElement('div', null, rowVNodes))
+                const pixelDataArray = _.chunk(image.data, 4).map(function(v){
+                    // 获取区域平均灰度及平均RGB色彩值 为提高效率将单像素灰度计算中的除以100提出
+                    // https://www.cnblogs.com/zhangjiansheng/p/6925722.html
+                    var Gray = (v[0]*38 + v[1]*75 + v[2]*15) >> 7; // 计算像素灰度
+                    var p = { Gray, T: _this.charMap[Gray], R: v[0], G: v[1], B:v[2] }; // T: 映射灰度字符
+                    // p.vnode = I$CE('span', { style: styleTemplate(p) }, Inferno.createTextVNode(p.T));
+                    // p.vnode = R$CE('span', { style: styleTemplate(p) }, p.T);
+                    return p;
+                }); // 像素数据数组
+                const rowDataArray = _.chunk(pixelDataArray, image.width).map(function(v) {
+                    // rowVNodes.push(I$CE('div', null, colVNodes));
+                    // rowVNodes.push(R$CE('div', {}, colVNodes));
+                    return v;
+                }); // 行数据数组
+                if(callback instanceof Function) {
+                    callback(rowDataArray);
+                    // callback(rowDataArray, I$CE('div', null, rowVNodes));
+                    // callback(rowDataArray, R$CE('div', null, rowVNodes));
+                }
             },
             // 更新画面
             update: function(frameData, frameVNode) {
@@ -257,6 +259,8 @@ function onload(){
                 // view.appendChild(this.range.createContextualFragment(frame));
                 // 方法五 Inferno差异化渲染(当前场景效率低)
                 // Inferno.render(frameVNode, view);
+                // 方法六 anujs渲染(TODO)
+                // React.render(frameVNode, view);
                 this.content = frame; // 渲染画面
                 this.$nextTick(function() {
                     this.stats.update(); // 触发性能统计
