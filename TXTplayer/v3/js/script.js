@@ -232,19 +232,16 @@ function onload(){
                     // p.vnode = R$CE('span', { style: styleTemplate(p) }, p.T);
                     return p;
                 }); // 像素数据数组
+                const rowVNodes = [];
                 const rowDataArray = _.chunk(pixelDataArray, image.width).map(function(v) {
-                    // rowVNodes.push(I$CE('div', null, colVNodes));
-                    // rowVNodes.push(R$CE('div', {}, colVNodes));
+                    // rowVNodes.push(I$CE('div', null, _.map(v, 'vnode')));
+                    // rowVNodes.push(R$CE('div', null, _.map(v, 'vnode')));
                     return v;
                 }); // 行数据数组
-                if(callback instanceof Function) {
-                    callback(rowDataArray);
-                    // callback(rowDataArray, I$CE('div', null, rowVNodes));
-                    // callback(rowDataArray, R$CE('div', null, rowVNodes));
-                }
+                if(callback instanceof Function) callback(rowDataArray, rowVNodes);
             },
             // 更新画面
-            update: function(frameData, frameVNode) {
+            update: function(frameData, rowVNodes) {
                 var _this = this, view = this.$refs.view;
                 // 方法一 行模板渲染(相较方法二兼容更多浏览器,不易发生栈溢出)
                 var frame = frameData.map(function(v) {
@@ -258,9 +255,9 @@ function onload(){
                 // view.innerHtml = null;
                 // view.appendChild(this.range.createContextualFragment(frame));
                 // 方法五 Inferno差异化渲染(当前场景效率低)
-                // Inferno.render(frameVNode, view);
+                // Inferno.render(I$CE('div', null, rowVNodes), view);
                 // 方法六 anujs渲染(TODO)
-                // React.render(frameVNode, view);
+                // React.render(R$CE('div', null, rowVNodes)), view);
                 this.content = frame; // 渲染画面
                 this.$nextTick(function() {
                     this.stats.update(); // 触发性能统计
