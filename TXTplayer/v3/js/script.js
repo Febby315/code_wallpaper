@@ -1,20 +1,23 @@
-const getImageBlob = function(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('get', url, true);
-    xhr.responseType = 'blob';
-    xhr.onload = function() {
-        if(this.status === 200 && callback instanceof Function) callback(URL.createObjectURL(this.response));
+// 获取图片对象本地链接
+function getImageBlob(url, callback) {
+    var _xhr = new XMLHttpRequest();
+    _xhr.open('get', url, true);
+    _xhr.responseType = 'blob';
+    _xhr.onload = function() {
+        var _localUrl = URL.createObjectURL(this.response);
+        var _mime = this.response ? this.response.type : null;
+        if(this.status === 200 && callback instanceof Function) callback(_localUrl, _mime);
     };
-    xhr.send();
+    _xhr.send();
 }
 
-// 页面body加载完成
+// DOM加载完成
 function onload(){
-    // const I$CE = Inferno.createElement;
-    // const R$CE = React.createElement;
-    const UA = navigator.userAgent;
-    const isAndroid = UA.indexOf('Android') > -1 || UA.indexOf('Adr') > -1; //android终端
-    const space = isAndroid? '&nbsp;' : '&ensp;';
+    // var I$CE = Inferno.createElement;
+    // var R$CE = React.createElement;
+    var UA = navigator.userAgent;
+    var isAndroid = UA.indexOf('Android') > -1 || UA.indexOf('Adr') > -1; //android终端
+    var space = isAndroid? '&nbsp;' : '&ensp;';
     // 利用vue虚拟DOM技术加速DOM节点数据渲染
     var v$app = window.v$app = new Vue({
         el: "#app",
@@ -33,8 +36,6 @@ function onload(){
             fps: 300, // fps(流畅度)
             fontSize: 12, // 视图容器字体大小
             chars: [space, '.', ':', ';', '!', 'i', 'c', 'e', 'm', '@'], // 映射字符集;
-            styleTemplate: doT.template('color: rgb({{=it.R}},{{=it.G}},{{=it.B}});'), // 彩色字符style模板
-            spanTemplate: doT.template('<span style="color:rgb({{=it.R}},{{=it.G}},{{=it.B}});">{{=it.T}}</span>'), // 彩色字符模板
             sw: document.body.offsetWidth, sh: document.body.offsetHeight, // 存储屏幕宽高(含初始化)
             sourceScale: 1, // 默认素材宽高比
             currRowTempFn: null, // 行模板
@@ -44,10 +45,10 @@ function onload(){
         computed:{
             // 配置灰度字符映射表
             charMap: function() {
-                var chars = !this.enableReverse ? this.chars : this.chars.reverse();
-                var len = 256, step = ~~(len/(chars.length-1)); // 映射步长=最大字符长度/映射字符长度
-                return Array.apply(!0, Array(len)).map(function(v,i,c){
-                    return chars[~~(i / step)];
+                var _chars = !this.enableReverse ? this.chars : this.chars.reverse();
+                var _len = 256, _step = ~~(_len/(_chars.length-1)); // 映射步长=最大字符长度/映射字符长度
+                return _.map(Array.apply(!0, Array(_len)), function(v,i,c){
+                    return _chars[~~(i / _step)];
                 });
             },
             // 屏幕宽高比
@@ -60,24 +61,34 @@ function onload(){
             },
             // 屏幕允许最大列数
             maxCol: function() {
-                var fontWidth = this.fontSize / 2;
-                return ~~(this.sw / fontWidth);
+                var _fontWidth = this.fontSize / 2;
+                return ~~(this.sw / _fontWidth);
             },
             // 画面帧间隔时间ms
             fpsStep: function() {
                 return 1000 / this.fps;
             },
+            // 彩色字符style模板
+            styleTemplate: function() {
+                return doT.template('color: rgb({{=it.R}},{{=it.G}},{{=it.B}});');
+            },
+            // 彩色字符模板
+            spanTemplate: function() {
+                return doT.template('<span style="color:rgb({{=it.R}},{{=it.G}},{{=it.B}});">{{=it.T}}</span>');
+            },
+            // 自定义class
             viewClass: function() {
-                var className = url("?className");
-                if(!Array.isArray(className)) className = [className];
-                className.push({
+                var _className = url("?className");
+                if(!Array.isArray(_className)) _className = [_className];
+                _className.push({
                     reverse: url("?enableReverse") // 反转色彩
                 });
-                return className;
+                return _className;
             },
+            // 自定义style
             viewStyle: function() {
-                var style = url("?style");
-                return style ? JSON.parse(style) : undefined;
+                var _style = url("?style");
+                return _style ? JSON.parse(_style) : undefined;
             },
         },
         mounted: function() {
@@ -90,21 +101,21 @@ function onload(){
         // 数据监听
         watch: {
             src: function(nv, ov) {
-                var video = this.$refs.video, canvas = this.$refs.canvas;
+                var _video = this.$refs.video, _canvas = this.$refs.canvas;
                 this.timer ? clearInterval(this.timer) : null; // 移除定时器
-                var ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height); // 清除画布
-                var ext = url("fileext", nv);
-                switch(String(ext).toLowerCase()) {
-                    case "flv": this.loadFlv(nv, ext); break;
-                    case "m3u8": this.loadHls(nv, ext); break;
-                    case "jpg": this.loadImage(nv, ext); break;
-                    case "png": this.loadImage(nv, ext); break;
-                    case "gif": this.loadImage(nv, ext); break;
-                    default: video.src = nv; break;
+                var _ctx = _canvas.getContext('2d');
+                _ctx.clearRect(0, 0, _canvas.width, _canvas.height); // 清除画布
+                var _ext = url("fileext", nv);
+                switch(String(_ext).toLowerCase()) {
+                    case "flv": this.loadFlv(nv, _ext); break;
+                    case "m3u8": this.loadHls(nv, _ext); break;
+                    case "jpg": this.loadImage(nv, _ext); break;
+                    case "png": this.loadImage(nv, _ext); break;
+                    case "gif": this.loadImage(nv, _ext); break;
+                    default: _video.src = nv; break;
                 }
                 this.$nextTick(function() {
-                    video.load();
+                    _video.load();
                 });
             },
             enableColor: function(nv, ov) {
@@ -114,194 +125,192 @@ function onload(){
         methods: {
             // 加载Flv链接地址
             loadFlv: function(src, callback) {
-                var video = this.$refs.video;
+                var _video = this.$refs.video;
                 if(flvjs.isSupported()) {
-                    var flvPlayer = flvjs.createPlayer({ type: 'flv', url: src });
-                    flvPlayer.attachMediaElement(video);
-                    flvPlayer.load();
-                    video.load();
-                    // flvPlayer.play();
-                    if(callback instanceof Function) callback(flvPlayer);
+                    var _flvPlayer = flvjs.createPlayer({ type: 'flv', url: src });
+                    _flvPlayer.attachMediaElement(_video);
+                    _flvPlayer.load();
+                    _video.load();
+                    if(callback instanceof Function) callback(_flvPlayer);
                 }
             },
             // 加载Hls链接地址(m3u8)
             loadHls: function(src, callback) {
-                var video = this.$refs.video;
+                var _video = this.$refs.video;
                 if(Hls.isSupported()) {
-                    var hls = new Hls();
-                    hls.loadSource(src);
-                    hls.attachMedia(video);
-                    video.load();
-                    if(callback instanceof Function) callback(hls);
+                    var _hls = new Hls();
+                    _hls.loadSource(src);
+                    _hls.attachMedia(_video);
+                    _video.load();
+                    if(callback instanceof Function) callback(_hls);
                 }
             },
             // 加载静态图片链接地址
-            loadImage: function(src, callback) {
-                var image = this.$refs.image;
-                getImageBlob(src, function(url) {
-                    image.src = url;
+            loadImage: function(src, ext, callback) {
+                var _image = this.$refs.image;
+                getImageBlob(src, function(url, _mime) {
+                    _image.src = url;
+                    _image.setAttribute("data-mime", _mime);
                 });
             },
             // 渲染帧数据
             renderFrame: function(frameData) {
-                var enableColor = this.enableColor, spanTemplate = this.spanTemplate;
-                return frameData.map(function(rowData) {
-                    return rowData.map(function(v) {
-                        return enableColor ? spanTemplate(v) : v.T;
+                var _enableColor = this.enableColor, _spanTemplate = this.spanTemplate;
+                return _.map(frameData, function(rowData) {
+                    return _.map(rowData, function(v) {
+                        return _enableColor ? _spanTemplate(v) : v.T;
                     }).join('');
                 }).join('<br/>\n');
             },
             // 实时生成行模板
-            rowTempFn: function(rowData) {
-                var canvas = this.$refs.canvas, templates = [];
+            rowTempFn: function() {
+                var _canvas = this.$refs.canvas, _templates = [];
                 if(this.enableColor) {
-                    for(var i = 0; i < canvas.width; i += 1) {
-                        templates.push('<span style="color:rgb({{=it['+i+'].R}},{{=it['+i+'].G}},{{=it['+i+'].B}});">{{=it['+i+'].T}}</span>');
+                    for(var i = 0; i < _canvas.width; i += 1) {
+                        _templates.push('<span style="color:rgb({{=it['+i+'].R}},{{=it['+i+'].G}},{{=it['+i+'].B}});">{{=it['+i+'].T}}</span>');
                     }
                 } else {
-                    for(var i = 0; i < canvas.width; i += 1) {
-                        templates.push('{{=it['+i+'].T}}');
+                    for(var i = 0; i < _canvas.width; i += 1) {
+                        _templates.push('{{=it['+i+'].T}}');
                     }
                 }
-                return doT.template(templates.join(''));
+                return doT.template(_templates.join(''));
             },
             // 实时生成帧模板
             frameTempFn: function() {
-                var canvas = this.$refs.canvas, templates = [];
+                var _canvas = this.$refs.canvas, _templates = [];
                 if(this.enableColor) {
-                    for(var i = 0; i < canvas.height; i += 1) {
-                        for(var j = 0; j < canvas.width; j += 1) {
-                            templates.push('<span style="color:rgb({{=it['+i+']['+j+'].R}},{{=it['+i+']['+j+'].G}},{{=it['+i+']['+j+'].B}});">{{=it['+i+']['+j+'].T}}</span>');
+                    for(var i = 0; i < _canvas.height; i += 1) {
+                        for(var j = 0; j < _canvas.width; j += 1) {
+                            _templates.push('<span style="color:rgb({{=it['+i+']['+j+'].R}},{{=it['+i+']['+j+'].G}},{{=it['+i+']['+j+'].B}});">{{=it['+i+']['+j+'].T}}</span>');
                         }
-                        templates.push('<br/>\n');
+                        _templates.push('<br/>\n');
                     }
                 } else {
-                    for(var i = 0; i < canvas.height; i += 1) {
-                        for(var j = 0; j < canvas.width; j += 1) {
-                            templates.push('{{=it['+i+']['+j+'].T}}');
+                    for(var i = 0; i < _canvas.height; i += 1) {
+                        for(var j = 0; j < _canvas.width; j += 1) {
+                            _templates.push('{{=it['+i+']['+j+'].T}}');
                         }
-                        templates.push('<br/>\n');
+                        _templates.push('<br/>\n');
                     }
                 }
-                return doT.template(templates.join(''));
+                return doT.template(_templates.join(''));
             },
             // 重置采集参数
             resetToCharsConfig: function() {
-                var canvas = this.$refs.canvas, app = this.$refs.app;
+                var _canvas = this.$refs.canvas, _app = this.$refs.app;
                 // 采集屏幕宽高
-                this.sw = app.offsetWidth;
-                this.sh = app.offsetHeight;
+                this.sw = _app.offsetWidth;
+                this.sh = _app.offsetHeight;
                 // console.log("最大允许 宽:%s 高:%s ", this.maxCol, this.maxRow);
                 // console.log("素材比屏幕宽?(%s) 素材宽高比:%s 屏幕宽高比:%s", this.sourceScale>this.screenScale, this.sourceScale, this.screenScale);
                 // 拉伸模式
-                // canvas.width = this.maxCol;
-                // canvas.height = this.maxRow;
+                // _canvas.width = this.maxCol;
+                // _canvas.height = this.maxRow;
 
                 // 自适应模式
                 if(this.sourceScale > this.screenScale) {
-                    canvas.width = this.maxCol;// 宽度自适应
+                    _canvas.width = this.maxCol;// 宽度自适应
                     // 在宽度自适应情况下高度/2与宽度保持比例(因字体高度是宽度的2倍, 为保证画面与素材保持正确比例)
-                    canvas.height = this.maxCol / this.sourceScale / 2;
+                    _canvas.height = this.maxCol / this.sourceScale / 2;
                 }else{
-                    canvas.height = this.maxRow;// 高度自适应
+                    _canvas.height = this.maxRow;// 高度自适应
                     // 在高度自适应情况下宽度*2与高度保持比例(因字体高度是宽度的2倍, 为保证画面与素材保持正确比例)
-                    canvas.width = this.maxRow * this.sourceScale * 2;
+                    _canvas.width = this.maxRow * this.sourceScale * 2;
                 }
 
-                // console.log("最终canvas宽高", canvas.width, canvas.height);
+                // console.log("最终canvas宽高", _canvas.width, _canvas.height);
                 this.currRowTempFn = this.rowTempFn(); // 生成行模版
                 this.currFrameTempFn = this.frameTempFn(); // 生成帧模版
             },
             // 绘制canvas
             drawCanvas: function(ctx, ele) {
-                const canvas = this.$refs.canvas;
-                ctx.drawImage(ele, 0, 0, canvas.width, canvas.height); // 绘制图像
-                this.toFrameData(ctx, canvas.width, canvas.height, this.update); // 将画布图像数据转换为字符画
+                var _canvas = this.$refs.canvas;
+                ctx.drawImage(ele, 0, 0, _canvas.width, _canvas.height); // 绘制图像
+                this.toFrameData(ctx, this.update); // 将画布图像数据转换为字符画
             },
             // 图像转字符画数据
-            toFrameData: function(ctx, cw, ch, callback) {
-                const _this = this, canvas = this.$refs.canvas;
-                const styleTemplate = this.styleTemplate;
-                var image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const pixelDataArray = _.chunk(image.data, 4).map(function(v){
+            toFrameData: function(ctx, callback) {
+                var _this = this, _canvas = this.$refs.canvas;
+                // var _styleTemplate = this.styleTemplate;
+                var _image = ctx.getImageData(0, 0, _canvas.width, _canvas.height);
+                var _pixelDataArray = _.map(_.chunk(_image.data, 4), function(v){
                     // 获取区域平均灰度及平均RGB色彩值 为提高效率将单像素灰度计算中的除以100提出
                     // https://www.cnblogs.com/zhangjiansheng/p/6925722.html
-                    var Gray = (v[0]*38 + v[1]*75 + v[2]*15) >> 7; // 计算像素灰度
-                    var p = { Gray, T: _this.charMap[Gray], R: v[0], G: v[1], B:v[2] }; // T: 映射灰度字符
-                    // p.vnode = I$CE('span', { style: styleTemplate(p) }, Inferno.createTextVNode(p.T));
-                    // p.vnode = R$CE('span', { style: styleTemplate(p) }, p.T);
-                    return p;
+                    var _Gray = (v[0]*38 + v[1]*75 + v[2]*15) >> 7; // 计算像素灰度
+                    var _p = { Gray: _Gray, T: _this.charMap[_Gray], R: v[0], G: v[1], B:v[2] }; // T: 映射灰度字符
+                    // p.vnode = I$CE('span', { style: _styleTemplate(_p) }, Inferno.createTextVNode(_p.T));
+                    // p.vnode = R$CE('span', { style: _styleTemplate(_p) }, _p.T);
+                    return _p;
                 }); // 像素数据数组
-                const rowVNodes = [];
-                const rowDataArray = _.chunk(pixelDataArray, image.width).map(function(v) {
-                    // rowVNodes.push(I$CE('div', null, _.map(v, 'vnode')));
-                    // rowVNodes.push(R$CE('div', null, _.map(v, 'vnode')));
+                var _rowVNodes = [];
+                var _rowDataArray = _.map(_.chunk(_pixelDataArray, _image.width), function(v) {
+                    // _rowVNodes.push(I$CE('div', null, _.map(v, 'vnode')));
+                    // _rowVNodes.push(R$CE('div', null, _.map(v, 'vnode')));
                     return v;
                 }); // 行数据数组
-                if(callback instanceof Function) callback(rowDataArray, rowVNodes);
+                if(callback instanceof Function) callback(_rowDataArray, _rowVNodes);
             },
             // 更新画面
             update: function(frameData, rowVNodes) {
-                var _this = this, view = this.$refs.view;
+                var _this = this, _view = this.$refs.view;
                 // 方法一 行模板渲染(相较方法二兼容更多浏览器,不易发生栈溢出)
-                var frame = frameData.map(function(v) {
-                    return _this.currRowTempFn(v);
-                }).join("<br/>\n");
+                var _frame = _.map(frameData, _this.currRowTempFn).join("<br/>\n");
                 // 方法二 帧模板渲染(效率高但兼容差易超出堆栈上限: Maximum call stack size exceeded)
-                // var frame = this.currFrameTempFn(frameData);
+                // var _frame = this.currFrameTempFn(frameData);
                 // 方法三 字符模板渲染(效率仅次于方法一,兼容性好);
-                // var frame = this.renderFrame(frameData);
+                // var _frame = this.renderFrame(frameData);
                 // 方法四 fragment预加载渲染(无法清除旧的innerHtml)
-                // view.innerHtml = null;
-                // view.appendChild(this.range.createContextualFragment(frame));
+                // _view.innerHtml = null;
+                // _view.appendChild(this.range.createContextualFragment(_frame));
                 // 方法五 Inferno差异化渲染(当前场景效率低)
-                // Inferno.render(I$CE('div', null, rowVNodes), view);
+                // Inferno.render(I$CE('div', null, rowVNodes), _view);
                 // 方法六 anujs渲染(TODO)
-                // React.render(R$CE('div', null, rowVNodes)), view);
-                this.content = frame; // 渲染画面
+                // React.render(R$CE('div', null, rowVNodes)), _view);
+                this.content = _frame; // 渲染画面
                 this.$nextTick(function() {
                     this.stats.update(); // 触发性能统计
                 });
             },
             // 初始化统计工具
             initStats: function() {
-                var tool = this.$refs.tool, statsEle = this.stats.domElement;
-                if(this.showStats && tool && statsEle) {
-                    statsEle.className = "stats";
-                    tool.appendChild(statsEle);
+                var _tool = this.$refs.tool, _statsEle = this.stats.domElement;
+                if(this.showStats && _tool && _statsEle) {
+                    _statsEle.className = "stats";
+                    _tool.appendChild(_statsEle);
                 }
             },
 
             // vue事件
             // fileChange 文件更改时修改视频源
             fileChange: function(e) {
-                var file = this.$refs.file, image = this.$refs.image;
-                if(file.files[0]) {
-                    this.src = URL.createObjectURL(file.files[0]);
-                    // 兼容图片
-                    var type = file.files[0].type;
-                    if(type.split("/")[0] === "image") {
-                        image.src = this.src;
-                        image.setAttribute("data-type", type);
+                var _file = this.$refs.file, _video = this.$refs.video, _image = this.$refs.image;
+                if(_file.files[0]) {
+                    var _src = URL.createObjectURL(_file.files[0]);
+                    var _mime = _file.files[0].type;
+                    switch(_mime.split("/")[0]) {
+                        case "image": _image.src = _src; _image.setAttribute("data-mime", _mime); break; // 图片文件
+                        case "video": _video.src = _src; _video.setAttribute("data-mime", _mime); break; // 视频文件
+                        default: alert("不支持该文件格式"); break;
                     }
                 }
             },
             // imgLoaded 图片加载成功
             imgLoaded: function(e) {
-                var image = this.$refs.image;
-                this.sourceScale = image.width/image.height;
+                var _image = this.$refs.image;
+                this.sourceScale = _image.width/_image.height;
                 this.resetToCharsConfig();
                 // 开始渲染
                 var _this = this, canvas = this.$refs.canvas;
-                var ctx = canvas.getContext('2d');
-                this.drawCanvas(ctx, image);
+                var _ctx = canvas.getContext('2d');
+                this.drawCanvas(_ctx, _image);
                 // gif支持
-                if(["image/gif"].indexOf(image.getAttribute("data-type")) !== -1) {
-                    var rub = new SuperGif({ gif: image, progressbar_height: 0 });
+                if(["image/gif"].indexOf(_image.getAttribute("data-mime")) !== -1) {
+                    var rub = new SuperGif({ gif: _image, progressbar_height: 0 });
                     rub.load(function() {
-                        var gifCanvas = rub.get_canvas();
+                        var _gifCanvas = rub.get_canvas();
                         _this.timer = setInterval(function() {
-                            _this.drawCanvas(ctx, gifCanvas);
+                            _this.drawCanvas(_ctx, _gifCanvas);
                         }, _this.fpsStep);
                     });
                 }
@@ -309,29 +318,27 @@ function onload(){
             // canplay 媒体可播放
             // loadedmetadata 媒体元数据加载
             loadedmetadata: function(e) {
-                var video = this.$refs.video;
-                this.sourceScale = video.videoWidth/video.videoHeight || this.screenScale;
+                var _video = this.$refs.video;
+                this.sourceScale = _video.videoWidth/_video.videoHeight || this.screenScale;
                 this.resetToCharsConfig();
             },
             // play 视频播放事件
             play: function(e) {
-                var _this = this, video = this.$refs.video, canvas = this.$refs.canvas;
-                var ctx = canvas.getContext('2d');
+                var _this = this, _video = this.$refs.video, _canvas = this.$refs.canvas;
+                var _ctx = _canvas.getContext('2d');
                 this.timer = setInterval(function() {
-                    if(!video.paused) {
-                        _this.drawCanvas(ctx, video);
-                    }
+                    if(!_video.paused) _this.drawCanvas(_ctx, _video);
                 }, _this.fpsStep);
             },
             // pause 视频暂停/停止事件
             pause: function(e) {
                 clearInterval(this.timer); // 视频暂停或结束停止定时器
-                e.type === "ended" ? this.content=null : null; // 结束播放清除视图
+                if(e.type === "ended") this.content = null; // 结束播放清除视图
             },
             // videoPlay 播放按钮点击事件
             videoPlay: function(e) {
-                var video = this.$refs.video;
-                video.paused ? video.play() : video.pause();
+                var _video = this.$refs.video;
+                _video.paused ? _video.play() : _video.pause();
             },
         }
     });
