@@ -4,8 +4,9 @@ function getImageBlob(url, callback) {
     _xhr.open('get', url, true);
     _xhr.responseType = 'blob';
     _xhr.onload = function() {
-        var _localUrl = URL.createObjectURL(this.response);
-        var _mime = this.response ? this.response.type : null;
+        var _response = this.response;
+        var _localUrl = URL.createObjectURL(_response);
+        var _mime = _response ? _response.type : null;
         if(this.status === 200 && callback instanceof Function) callback(_localUrl, _mime);
     };
     _xhr.send();
@@ -45,9 +46,9 @@ function onload(){
         computed:{
             // 配置灰度字符映射表
             charMap: function() {
-                var _chars = !this.enableReverse ? this.chars : this.chars.reverse();
-                var _len = 256, _step = ~~(_len/(_chars.length-1)); // 映射步长=最大字符长度/映射字符长度
-                return _.map(Array.apply(!0, Array(_len)), function(v,i,c){
+                var _chars = !this.enableReverse ? this.chars : _.reverse(_.concat([], this.chars));
+                var _len = 256, _step = ~~(_len / (_chars.length - 1)); // 映射步长=最大字符长度/映射字符长度
+                return _.map(Array.apply(!0, Array(_len)), function(v, i, c){
                     return _chars[~~(i / _step)];
                 });
             },
@@ -229,47 +230,53 @@ function onload(){
                 ctx.drawImage(ele, 0, 0, _canvas.width, _canvas.height); // 绘制图像
                 this.toFrameData(ctx, this.update); // 将画布图像数据转换为字符画
             },
-            // 图像转字符画数据
-            toFrameData: function(ctx, callback) {
-                var _this = this, _canvas = this.$refs.canvas;
+            // 灰度字符滤镜
+            filterChar(data, callback) {
+                var _charMap = this.charMap;
                 // var _styleTemplate = this.styleTemplate;
-                var _image = ctx.getImageData(0, 0, _canvas.width, _canvas.height);
-                var _pixelDataArray = _.map(_.chunk(_image.data, 4), function(v){
+                var _filter = function(v){
                     // 获取区域平均灰度及平均RGB色彩值 为提高效率将单像素灰度计算中的除以100提出
                     // https://www.cnblogs.com/zhangjiansheng/p/6925722.html
                     var _Gray = (v[0]*38 + v[1]*75 + v[2]*15) >> 7; // 计算像素灰度
-                    var _p = { Gray: _Gray, T: _this.charMap[_Gray], R: v[0], G: v[1], B:v[2] }; // T: 映射灰度字符
+                    var _p = { Gray: _Gray, T: _charMap[_Gray], R: v[0], G: v[1], B:v[2] }; // T: 映射灰度字符
                     // p.vnode = I$CE('span', { style: _styleTemplate(_p) }, Inferno.createTextVNode(_p.T));
                     // p.vnode = R$CE('span', { style: _styleTemplate(_p) }, _p.T);
                     return _p;
-                }); // 像素数据数组
-                var _rowVNodes = [];
+                }
+                return _.map(_.chunk(data, 4), _filter);
+            },
+            // 图像转字符画数据
+            toFrameData: function(ctx, callback) {
+                var _canvas = this.$refs.canvas;
+                var _image = ctx.getImageData(0, 0, _canvas.width, _canvas.height);
+                var _pixelDataArray = this.filterChar(_image.data); // _.map(_.chunk(_image.data, 4), ); // 像素数据数组
+                var _rowVNodes = []; // 行数据数组
                 var _rowDataArray = _.map(_.chunk(_pixelDataArray, _image.width), function(v) {
                     // _rowVNodes.push(I$CE('div', null, _.map(v, 'vnode')));
                     // _rowVNodes.push(R$CE('div', null, _.map(v, 'vnode')));
                     return v;
-                }); // 行数据数组
+                });
                 if(callback instanceof Function) callback(_rowDataArray, _rowVNodes);
             },
             // 更新画面
             update: function(frameData, rowVNodes) {
-                var _this = this, _view = this.$refs.view;
+                var _view = this.$refs.view, _range = this.range, _stats = this.stats;
                 // 方法一 行模板渲染(相较方法二兼容更多浏览器,不易发生栈溢出)
-                var _frame = _.map(frameData, _this.currRowTempFn).join("<br/>\n");
+                var _frame = _.map(frameData, this.currRowTempFn).join("<br/>\n");
                 // 方法二 帧模板渲染(效率高但兼容差易超出堆栈上限: Maximum call stack size exceeded)
                 // var _frame = this.currFrameTempFn(frameData);
                 // 方法三 字符模板渲染(效率仅次于方法一,兼容性好);
                 // var _frame = this.renderFrame(frameData);
                 // 方法四 fragment预加载渲染(无法清除旧的innerHtml)
                 // _view.innerHtml = null;
-                // _view.appendChild(this.range.createContextualFragment(_frame));
+                // _view.appendChild(_range.createContextualFragment(_frame));
                 // 方法五 Inferno差异化渲染(当前场景效率低)
                 // Inferno.render(I$CE('div', null, rowVNodes), _view);
                 // 方法六 anujs渲染(TODO)
                 // React.render(R$CE('div', null, rowVNodes)), _view);
                 this.content = _frame; // 渲染画面
                 this.$nextTick(function() {
-                    this.stats.update(); // 触发性能统计
+                    _stats.update(); // 触发性能统计
                 });
             },
             // 初始化统计工具
