@@ -4,16 +4,17 @@ html,body,#view{ width: 100%; height: 100%; margin: 0px; padding: 0px; overflow:
 .bg+#view{ color: rgba(220,150, 0, 0.85); }
 [v-cloak]{ display: none; }
 .item-box{ position: absolute; top:50%; left: 50%; display: flex; width: 100%; }
-.gz{ position: absolute; top:50%; left: 50%; transform: translate(-50%, 1.2rem); }
+.gz{ position: absolute; top:50%; left: 50%; transform: translate(-50%, 1.2rem); line-height: 1em; }
 .item{ position: absolute; left: 0px; flex:1; text-align: right; height: 1rem; transform-origin: left center; width: 100%; }
 .list{ line-height: 1rem; transform-origin: left center; }
-.active{ background-color: rgba(0,0,0,0.5); color: bisque; }
-.year-item{ position: fixed; transform: translate(-50%, -0%); }
-.month-item{ position: fixed; width: 8rem; }
-.day-item{ position: fixed; width: 15rem; }
-.hour-item{ position: fixed; width: 20rem; }
-.minute-item{ position: fixed; width: 25rem; }
-.second-item{ position: fixed; width: 30rem; }
-.tgdz-item{ position: fixed; width: 35rem; }
+.active{ color: rgba(100,255,0,0.8); }
 
-.year-item>*{ transform: translate(0%, -50%); }
+.item-year{ position: fixed; transform: translate(-50%, -0%); }
+.item-month{ position: fixed; width: 8rem; }
+.item-day{ position: fixed; width: 15rem; }
+.item-hour{ position: fixed; width: 20rem; }
+.item-minute{ position: fixed; width: 25rem; }
+.item-second{ position: fixed; width: 30rem; }
+.item-tgdz{ position: fixed; width: 35rem; }
+
+.item-year>*{ transform: translate(0%, -50%); }

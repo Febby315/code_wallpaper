@@ -1,55 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>时间轮壁纸</title>
+    <link rel="stylesheet" href="//cdnjs.loli.net/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <script src="https://cdn.staticfile.org/dot/1.1.2/doT.min.js"></script>
-    <script src="https://cdn.staticfile.org/vue/2.6.10/vue.min.js"></script>
-    <script src="https://cdn.staticfile.org/moment.js/2.24.0/moment.min.js"></script>
+    <script src="//cdnjs.loli.net/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="//cdnjs.loli.net/ajax/libs/vue/2.6.10/vue.min.js"></script>
+    <script src="//cdnjs.loli.net/ajax/libs/dot/1.1.2/doT.min.js"></script>
+    
 </head>
 <body>
     <div class="bg"></div>
     <div id="view" v-cloak>
-        <!-- <div class="gz">({{toUpperGz(base.gzYear)}})</div> -->
+        <div class="gz ">({{toUpperGz(base.gzYear)}}年)</div>
         <div class="item-box">
             <div id="tgdz" class="item tgdz" :style="style.gzYear">
-                <div v-for="(v, i) in 60" class="list tgdz-item" :key="i" :class="{active: v== base.gzYear}" :style="getRotateStyle(v, base.gz)">
+                <div v-for="(v, i) in 60" class="list item-tgdz" :key="i" :class="{active: v== base.gzYear}" :style="getRotateStyle(v, base.gz)">
                     {{toUpperGz(v)}}
                 </div>
             </div>
             <div id="second" class="item second" :style="style.second">
                 <!-- <transition-group name="second"></transition-group> -->
                 <!-- <transition-group name="second"> -->
-                    <div v-for="(v, i) in base.second" class="list second-item" :key="i" :class="{active: i==ct.second()}" :style="getRotateStyle(i, base.second)">
+                    <div v-for="(v, i) in base.second" class="list item-second" :key="i" :class="{active: i==ct.second()}" :style="getRotateStyle(i, base.second)">
                         {{toUpper(i, true)}}秒
                     </div>
                 <!-- </transition-group> -->
             </div>
             <div id="minute" class="item minute" :style="style.minute">
-                <div v-for="(v, i) in base.minute" class="list minute-item" :key="i" :class="{active: i==ct.minute()}" :style="getRotateStyle(i, base.minute)">
+                <div v-for="(v, i) in base.minute" class="list item-minute" :key="i" :class="{active: i==ct.minute()}" :style="getRotateStyle(i, base.minute)">
                     {{toUpper(i, true)}}分
                 </div>
             </div>
             <div id="hour" class="item hour" :style="style.hour">
-                <div v-for="(v, i) in base.hour" class="list hour-item" :key="i" :class="{active: i==ct.hour()}" :style="getRotateStyle(i, base.hour)">
+                <div v-for="(v, i) in base.hour" class="list item-hour" :key="i" :class="{active: i==ct.hour()}" :style="getRotateStyle(i, base.hour)">
                     {{toUpper(i, true)}}时
                 </div>
             </div>
             <div id="day" class="item day" :style="style.date">
-                <div v-for="(v, i) in base.date" class="list day-item" :key="i" :class="{active: v==ct.date()}" :style="getRotateStyle(i, base.date)">
+                <div v-for="(v, i) in base.date" class="list item-day" :key="i" :class="{active: v==ct.date()}" :style="getRotateStyle(i, base.date)">
                     {{toUpper(v, true)}}日
                 </div>
             </div>
             <div id="month" class="item month" :style="style.month">
-                <div v-for="(v, i) in base.month" class="list month-item" :key="i" :class="{active: v==ct.month()+1}" :style="getRotateStyle(i, base.month)">
+                <div v-for="(v, i) in base.month" class="list item-month" :key="i" :class="{active: v==ct.month()+1}" :style="getRotateStyle(i, base.month)">
                     {{toUpper(v, true)}}月
                 </div>
             </div>
             <div id="year" class="item year" :style="style.year">
-                <div v-for="(v, i) in base.year" class="list year-item" :key="i" :class="{active: v==ct.year()}">
+                <div v-for="(v, i) in base.year" class="list item-year" :key="i" :class="{active: v==ct.year()}">
                     <!-- <img src="https://q4.qlogo.cn/g?b=qq&nk=564822672&s=140"> -->
                     {{toUpper(v)}}
                 </div>

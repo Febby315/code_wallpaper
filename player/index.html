@@ -22,17 +22,20 @@
 <body>
     <div id="body">
         <div style="text-align:center; color:#FAFAFA;">
-            <input type="text" v-model="url" placeholder="请输入播放链接..." style="width:100%" />
-            <input type="button" value="播放" @click="play" /> 视频:支持http协议(m3u8/flv/mp4/webp/ogg/ogv)/rtmp协议(flv/f4v)
+            <select id="" @change="handleSelectChange">
+                <option v-for="item,k in srcList" :value="item">{{k}}</option>
+            </select>
+            <input type="text" v-model="src" placeholder="请输入播放链接..." style="width:80%" />
+            <input type="button" value="播放" @click="play" title="视频:支持http协议(m3u8/flv/mp4/webp/ogg/ogv)/rtmp协议(flv/f4v)" />
             <!-- /rtsp协议(ts/mp4)/socket -->
         </div>
-        <div v-for="item,k in list" :id="item.id" ref="p" class="playerbox" v-key="k" @click="setTop(item)" @mouseover="item.butShow=true" @mouseout="item.butShow=false">
+        <div v-for="item,k in list" :id="item.id" ref="view" class="playerbox" v-key="k" @click="setTop(item)" @mouseover="item.butShow=true" @mouseout="item.butShow=false">
             <div class="button" v-show="item.butShow">
                <input type="button" value="X" @click="del(item)">
             </div>
-            <div :id="'d_'+item.id" class="video" style="width: 100%;height: 100%; display:none;" autoplay controls></div>
-            <video ref="v" class="video" style="width: 100%;height: 100%;" autoplay controls>
-                <source v-bind:src="item.url" :type="item.type||'video/mp4'">
+            <div :id="'dv_'+item.id" class="video" style="width: 100%;height: 100%; display:none;" autoplay controls></div>
+            <video ref="video" class="video" style="width: 100%;height: 100%;" autoplay controls>
+                <source v-bind:src="item.src" :type="item.type||'video/mp4'">
             </video>
         </div>
     </div>

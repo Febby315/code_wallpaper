@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!--
+  saved from url=(0052)http://source.upupoo.com/theme/2000006911/index.html
+-->
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>3D蜘蛛</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/verlet.min.js"></script>
+    <script src="lib/spider.js"></script>
+  </head>
+  <body bgcolor="skyblue">
+    <div>
+      <select id="name" hidden>
+        <option value="skyblue">背景</option>
+        <option value="white">网节点</option>
+        <option value="black">身体</option>
+        <option value="black">腿</option>
+      </select>
+      <select id="colorlist" hidden>
+        <option value="lightpink">浅粉红</option>
+        <option value="pink">粉红</option>
+        <option value="crimson">猩红</option>
+        <option value="lavenderblush">脸红的淡紫色</option>
+        <option value="palevioletred">苍白的紫罗兰红色</option>
+        <option value="hotpink">热情的粉红</option>
+        <option value="deeppink">深粉色</option>
+        <option value="mediumvioletred">适中的紫罗兰红色</option>
+        <option value="orchid">兰花的紫色</option>
+        <option value="thistle">蓟</option>
+        <option value="plum">李子</option>
+        <option value="violet">紫罗兰</option>
+        <option value="magenta">洋红</option>
+        <option value="fuchsia">灯笼海棠(紫红色)</option>
+        <option value="darkmagenta">深洋红色</option>
+        <option value="purple">紫色</option>
+        <option value="mediumorchid">适中的兰花紫</option>
+        <option value="darkvoilet">深紫罗兰色</option>
+        <option value="darkorchid">深兰花紫</option>
+        <option value="indigo">靛青</option>
+        <option value="blueviolet">深紫罗兰的蓝色</option>
+        <option value="mediumpurple">适中的紫色</option>
+        <option value="mediumslateblue">适中的板岩暗蓝灰色</option>
+        <option value="slateblue">板岩暗蓝灰色</option>
+        <option value="darkslateblue">深岩暗蓝灰色</option>
+        <option value="lavender">熏衣草花的淡紫色</option>
+        <option value="ghostwhite">幽灵的白色</option>
+        <option value="blue">纯蓝</option>
+        <option value="mediumblue">适中的蓝色</option>
+        <option value="midnightblue">午夜的蓝色</option>
+        <option value="darkblue">深蓝色</option>
+        <option value="navy">海军蓝</option>
+        <option value="royalblue">皇家蓝</option>
+        <option value="cornflowerblue">矢车菊的蓝色</option>
+        <option value="lightsteelblue">淡钢蓝</option>
+        <option value="lightslategray">浅石板灰</option>
+        <option value="slategray">石板灰</option>
+        <option value="doderblue">道奇蓝</option>
+        <option value="aliceblue">爱丽丝蓝</option>
+        <option value="steelblue">钢蓝</option>
+        <option value="lightskyblue">淡蓝色</option>
+        <option value="skyblue" selected="">天蓝色</option>
+        <option value="deepskyblue">深天蓝</option>
+        <option value="lightblue">淡蓝</option>
+        <option value="powderblue">火药蓝</option>
+        <option value="cadetblue">军校蓝</option>
+        <option value="azure">蔚蓝色</option>
+        <option value="lightcyan">淡青色</option>
+        <option value="paleturquoise">苍白的绿宝石</option>
+        <option value="cyan">青色</option>
+        <option value="aqua">水绿色</option>
+        <option value="darkturquoise">深绿宝石</option>
+        <option value="darkslategray">深石板灰</option>
+        <option value="darkcyan">深青色</option>
+        <option value="teal">水鸭色</option>
+        <option value="mediumturquoise">适中的绿宝石</option>
+        <option value="lightseagreen">浅海洋绿</option>
+        <option value="turquoise">绿宝石</option>
+        <option value="auqamarin">绿玉\碧绿色</option>
+        <option value="mediumaquamarine">适中的碧绿色</option>
+        <option value="mediumspringgreen">适中的春天的绿色</option>
+        <option value="mintcream">薄荷奶油</option>
+        <option value="springgreen">春天的绿色</option>
+        <option value="seagreen">海洋绿</option>
+        <option value="honeydew">蜂蜜</option>
+        <option value="lightgreen">淡绿色</option>
+        <option value="palegreen">苍白的绿色</option>
+        <option value="darkseagreen">深海洋绿</option>
+        <option value="limegreen">酸橙绿</option>
+        <option value="lime">酸橙色</option>
+        <option value="forestgreen">森林绿</option>
+        <option value="green">纯绿</option>
+        <option value="darkgreen">深绿色</option>
+        <option value="chartreuse">查特酒绿</option>
+        <option value="lawngreen">草坪绿</option>
+        <option value="greenyellow">绿黄色</option>
+        <option value="olivedrab">橄榄土褐色</option>
+        <option value="beige">米色(浅褐色)</option>
+        <option value="lightgoldenrodyellow">浅秋麒麟黄</option>
+        <option value="ivory">象牙</option>
+        <option value="lightyellow">浅黄色</option>
+        <option value="yellow">纯黄</option>
+        <option value="olive">橄榄</option>
+        <option value="darkkhaki">深卡其布</option>
+        <option value="lemonchiffon">柠檬薄纱</option>
+        <option value="palegodenrod">灰秋麒麟</option>
+        <option value="khaki">卡其布</option>
+        <option value="gold">金</option>
+        <option value="cornislk">玉米色</option>
+        <option value="goldenrod">秋麒麟</option>
+        <option value="floralwhite">花的白色</option>
+        <option value="oldlace">老饰带</option>
+        <option value="wheat">小麦色</option>
+        <option value="moccasin">鹿皮鞋</option>
+        <option value="orange">橙色</option>
+        <option value="papayawhip">番木瓜</option>
+        <option value="blanchedalmond">漂白的杏仁</option>
+        <option value="navajowhite">纳瓦霍白</option>
+        <option value="antiquewhite">古代的白色</option>
+        <option value="tan">晒黑</option>
+        <option value="brulywood">结实的树</option>
+        <option value="bisque">(浓汤)乳脂,番茄等</option>
+        <option value="darkorange">深橙色</option>
+        <option value="linen">亚麻布</option>
+        <option value="peru">秘鲁</option>
+        <option value="peachpuff">桃色</option>
+        <option value="sandybrown">沙棕色</option>
+        <option value="chocolate">巧克力</option>
+        <option value="saddlebrown">马鞍棕色</option>
+        <option value="seashell">海贝壳</option>
+        <option value="sienna">黄土赭色</option>
+        <option value="lightsalmon">浅鲜肉 (鲑鱼) 色</option>
+        <option value="coral">珊瑚</option>
+        <option value="orangered">橙红色</option>
+        <option value="darksalmon">深鲜肉 (鲑鱼) 色</option>
+        <option value="tomato">番茄</option>
+        <option value="mistyrose">薄雾玫瑰</option>
+        <option value="salmon">鲜肉 (鲑鱼) 色</option>
+        <option value="snow">雪</option>
+        <option value="lightcoral">淡珊瑚色</option>
+        <option value="rosybrown">玫瑰棕色</option>
+        <option value="indianred">印度红</option>
+        <option value="red">纯红</option>
+        <option value="brown">棕色</option>
+        <option value="firebrick">耐火砖</option>
+        <option value="darkred">深红色</option>
+        <option value="maroon">栗色</option>
+        <option value="white">纯白</option>
+        <option value="whitesmoke">白烟</option>
+        <option value="gainsboro">亮灰色</option>
+        <option value="lightgrey">浅灰色</option>
+        <option value="silver">银白色</option>
+        <option value="darkgray">深灰色</option>
+        <option value="gray">灰色</option>
+        <option value="dimgray">暗淡的灰色</option>
+        <option value="black">纯黑</option>
+      </select>
+    </div>
+    <canvas
+      style="width:1850px;height:700px"
+      width="100%"
+      height="100%"
+    ></canvas>
+  </body>
+</html>

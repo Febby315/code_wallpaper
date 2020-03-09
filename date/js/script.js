@@ -1,3 +1,25 @@
+function toUpper(v, enable){
+    var unitMap = '个万亿兆京垓秭穰沟涧正载'.split("");
+    var numberMap = '零一二三四五六七八九'.split("");
+    var strMap = String(v).split("").reverse().map(function(v,i){
+        return numberMap[v];
+    });
+    console.log("strMap", strMap);
+    if(enable){
+        var ss = strMap.map(function(v, i){
+            var pn = '', sn='';
+            var sn = i%4==0 ? unitMap[~~(i/4)] : '';
+            if(v=='零'){
+                i%4==0 ? v='' : null;
+            }else{
+                pn = '个十百千'.split("")[i%4];
+            }
+            return v+pn+sn;
+        });
+        console.log("ss", ss.reverse().join("").replace(/个/g,"").replace(/零+/mg,"零"));
+    }
+}
+
 window.onload = function(){
     var $v_app = window.$v_app = new Vue({
         el: "#view",
@@ -5,7 +27,7 @@ window.onload = function(){
             rotate: 0,
             timer: null,
             format: "YYYY-MM-DD HH:mm:ss",
-            ct: moment(),
+            ct: moment(0),
             unitMap:'十百千十百万亿兆京垓秭穰沟涧正载',
             numberMap: '零一二三四五六七八九',
             tgMap: '癸甲乙丙丁戊己庚辛壬',
@@ -14,14 +36,17 @@ window.onload = function(){
         mounted:function(){
             _this = this;
             this.$nextTick(function(){
-                this.timer = setInterval(function(){
-                    _this.ct = moment();
-                },1000);
                 // 启动动画
-                var start_timer=setInterval(function(){
-                    _this.rotate = _this.rotate + 3.6;
-                    _this.rotate>=360 && clearInterval(start_timer);
-                },10);
+                var start_timer = setInterval(function(){
+                    _this.rotate = _this.rotate + 12;
+                    if(_this.rotate>=360){
+                        clearInterval(start_timer);
+                        _this.ct = moment();
+                        _this.timer = setInterval(function(){
+                            _this.ct = moment();
+                        },1000);
+                    }
+                },30);
             });
         },
         methods: {
@@ -58,7 +83,7 @@ window.onload = function(){
             // 动态获取基值
             base: function(){
                 return {
-                    year: [2019],
+                    year: [this.ct.year()],
                     month: 12,
                     date: this.ct.daysInMonth(),    // 天数
                     hour: 24,
@@ -71,7 +96,6 @@ window.onload = function(){
             // 各时间单位动态旋转样式
             style: function(){
                 var ct = this.ct;
-                var base = this.base;
                 return {
                     gzYear: {transform: `rotate(${-6*this.toGzYear(ct)}deg)`},
                     year: { transform: `rotate(${0}deg)`},
