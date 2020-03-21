@@ -28,13 +28,12 @@ function onload(){
             m3u8src: "//ivi.bupt.edu.cn/hls/cctv10.m3u8",
             content: null, // 视图html内容
             timer: null, // 定时器索引
-            range: document.createRange(), // 用于通过TagString创建虚拟dom(DocumentFragment)节点
             stats: new Stats(), // 性能监视器:含fps、耗时ms、内存分配
             showStats: !!url("?showStats"), // 显示统计信息
             enableColor: !!url("?enableColor"), // 启用输出色彩
             enableReverse: !!url("?enableReverse"), // 启用色彩反转
             // 拉伸/自适应
-            fps: 300, // fps(流畅度)
+            fps: 60, // fps(流畅度)
             fontSize: 12, // 视图容器字体大小
             chars: [space, '.', ':', ';', '!', 'i', 'c', 'e', 'm', '@'], // 映射字符集;
             sw: document.body.offsetWidth, sh: document.body.offsetHeight, // 存储屏幕宽高(含初始化)
@@ -232,15 +231,14 @@ function onload(){
             },
             // 灰度字符滤镜
             filterChar(data, callback) {
-                var _charMap = this.charMap;
-                // var _styleTemplate = this.styleTemplate;
+                var _charMap = this.charMap, _styleTemplate = this.styleTemplate;
                 var _filter = function(v){
                     // 获取区域平均灰度及平均RGB色彩值 为提高效率将单像素灰度计算中的除以100提出
                     // https://www.cnblogs.com/zhangjiansheng/p/6925722.html
                     var _Gray = (v[0]*38 + v[1]*75 + v[2]*15) >> 7; // 计算像素灰度
-                    var _p = { Gray: _Gray, T: _charMap[_Gray], R: v[0], G: v[1], B:v[2] }; // T: 映射灰度字符
-                    // p.vnode = I$CE('span', { style: _styleTemplate(_p) }, Inferno.createTextVNode(_p.T));
-                    // p.vnode = R$CE('span', { style: _styleTemplate(_p) }, _p.T);
+                    var _p = { Gray: _Gray, T: _charMap[_Gray], R: v[0], G: v[1], B: v[2] }; // T: 映射灰度字符
+                    // _p.vnode = I$CE('span', { style: _styleTemplate(_p) }, Inferno.createTextVNode(_p.T));
+                    // _p.vnode = R$CE('span', { style: _styleTemplate(_p) }, _p.T);
                     return _p;
                 }
                 return _.map(_.chunk(data, 4), _filter);
@@ -250,30 +248,28 @@ function onload(){
                 var _canvas = this.$refs.canvas;
                 var _image = ctx.getImageData(0, 0, _canvas.width, _canvas.height);
                 var _pixelDataArray = this.filterChar(_image.data); // _.map(_.chunk(_image.data, 4), ); // 像素数据数组
-                var _rowVNodes = []; // 行数据数组
-                var _rowDataArray = _.map(_.chunk(_pixelDataArray, _image.width), function(v) {
-                    // _rowVNodes.push(I$CE('div', null, _.map(v, 'vnode')));
-                    // _rowVNodes.push(R$CE('div', null, _.map(v, 'vnode')));
+                var _filter = function(v) {
+                    // return I$CE('div', null, _.map(v, 'vnode'));
+                    // return R$CE('div', null, _.map(v, 'vnode'));
                     return v;
-                });
+                }
+                var _rowDataArray = _.chunk(_pixelDataArray, _image.width);
+                var _rowVNodes = [] || _.map(_rowDataArray, _filter); // 行数据数组 
                 if(callback instanceof Function) callback(_rowDataArray, _rowVNodes);
             },
             // 更新画面
             update: function(frameData, rowVNodes) {
-                var _view = this.$refs.view, _range = this.range, _stats = this.stats;
+                var _view = this.$refs.view, _stats = this.stats;
                 // 方法一 行模板渲染(相较方法二兼容更多浏览器,不易发生栈溢出)
                 var _frame = _.map(frameData, this.currRowTempFn).join("<br/>\n");
                 // 方法二 帧模板渲染(效率高但兼容差易超出堆栈上限: Maximum call stack size exceeded)
                 // var _frame = this.currFrameTempFn(frameData);
                 // 方法三 字符模板渲染(效率仅次于方法一,兼容性好);
                 // var _frame = this.renderFrame(frameData);
-                // 方法四 fragment预加载渲染(无法清除旧的innerHtml)
-                // _view.innerHtml = null;
-                // _view.appendChild(_range.createContextualFragment(_frame));
                 // 方法五 Inferno差异化渲染(当前场景效率低)
                 // Inferno.render(I$CE('div', null, rowVNodes), _view);
                 // 方法六 anujs渲染(TODO)
-                // React.render(R$CE('div', null, rowVNodes)), _view);
+                // React.render(R$CE('div', null, rowVNodes), _view);
                 this.content = _frame; // 渲染画面
                 this.$nextTick(function() {
                     _stats.update(); // 触发性能统计
