@@ -25,7 +25,7 @@ function onload(){
         data: {
             src: "",
             flvsrc: "//aliyun-flv.yy.com/live/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0-96597708953498332-96597708953498333-2-2748477-33.flv?codec=orig&secret=bec0e1c80fad166895855545ff4efc89&t=1562310185&appid=15013",
-            m3u8src: "//ivi.bupt.edu.cn/hls/cctv10.m3u8",
+            m3u8src: "http://ivi.bupt.edu.cn/hls/cctv10.m3u8",
             content: null, // 视图html内容
             timer: null, // 定时器索引
             stats: new Stats(), // 性能监视器:含fps、耗时ms、内存分配
