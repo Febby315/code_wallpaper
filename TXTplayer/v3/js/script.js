@@ -13,7 +13,8 @@ function getImageBlob(url, callback) {
 }
 
 // DOM加载完成
-function onload(){
+function onload() {
+    console.log(this)
     // var I$CE = Inferno.createElement;
     // var R$CE = React.createElement;
     var UA = navigator.userAgent;
@@ -42,7 +43,7 @@ function onload(){
             currFrameTempFn: null, // 帧模板
         },
         // 动态计算
-        computed:{
+        computed: {
             // 配置灰度字符映射表
             charMap: function() {
                 var _chars = !this.enableReverse ? this.chars : _.reverse(_.concat([], this.chars));
@@ -218,7 +219,6 @@ function onload(){
                     // 在高度自适应情况下宽度*2与高度保持比例(因字体高度是宽度的2倍, 为保证画面与素材保持正确比例)
                     _canvas.width = this.maxRow * this.sourceScale * 2;
                 }
-
                 // console.log("最终canvas宽高", _canvas.width, _canvas.height);
                 this.currRowTempFn = this.rowTempFn(); // 生成行模版
                 this.currFrameTempFn = this.frameTempFn(); // 生成帧模版
@@ -230,7 +230,7 @@ function onload(){
                 this.toFrameData(ctx, this.update); // 将画布图像数据转换为字符画
             },
             // 灰度字符滤镜
-            filterChar(data, callback) {
+            filterChar: function(data, callback) {
                 var _charMap = this.charMap, _styleTemplate = this.styleTemplate;
                 var _filter = function(v){
                     // 获取区域平均灰度及平均RGB色彩值 为提高效率将单像素灰度计算中的除以100提出
@@ -346,3 +346,6 @@ function onload(){
         }
     });
 }
+
+// 函数入口
+onload();
