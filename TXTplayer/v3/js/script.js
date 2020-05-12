@@ -204,7 +204,7 @@ function onload() {
             },
             // 重置采集参数
             resetToCharsConfig: function() {
-                var _canvas = this.$refs.canvas, _view = this.$refs.view;
+                var _canvas = this.$refs.canvas, _view = this.$refs.app;
                 // 采集屏幕宽高
                 this.sw = _view.offsetWidth;
                 this.sh = _view.offsetHeight;
