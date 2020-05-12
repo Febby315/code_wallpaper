@@ -14,7 +14,6 @@ function getImageBlob(url, callback) {
 
 // DOM加载完成
 function onload() {
-    console.log(this)
     // var I$CE = Inferno.createElement;
     // var R$CE = React.createElement;
     var UA = navigator.userAgent;
@@ -119,6 +118,12 @@ function onload() {
                     _video.load();
                 });
             },
+            content: function(nv, ov) {
+                var _stats = this.stats;
+                this.$nextTick(function() {
+                    _stats.update(); // 触发性能统计
+                });
+            },
             enableColor: function(nv, ov) {
                 this.resetToCharsConfig();
             }
@@ -199,10 +204,10 @@ function onload() {
             },
             // 重置采集参数
             resetToCharsConfig: function() {
-                var _canvas = this.$refs.canvas, _app = this.$refs.app;
+                var _canvas = this.$refs.canvas, _view = this.$refs.view;
                 // 采集屏幕宽高
-                this.sw = _app.offsetWidth;
-                this.sh = _app.offsetHeight;
+                this.sw = _view.offsetWidth;
+                this.sh = _view.offsetHeight;
                 // console.log("最大允许 宽:%s 高:%s ", this.maxCol, this.maxRow);
                 // console.log("素材比屏幕宽?(%s) 素材宽高比:%s 屏幕宽高比:%s", this.sourceScale>this.screenScale, this.sourceScale, this.screenScale);
                 // 拉伸模式
@@ -236,7 +241,7 @@ function onload() {
                     // 获取区域平均灰度及平均RGB色彩值 为提高效率将单像素灰度计算中的除以100提出
                     // https://www.cnblogs.com/zhangjiansheng/p/6925722.html
                     var _Gray = (v[0]*38 + v[1]*75 + v[2]*15) >> 7; // 计算像素灰度
-                    var _p = { Gray: _Gray, T: _charMap[_Gray], R: v[0], G: v[1], B: v[2] }; // T: 映射灰度字符
+                    var _p = { R: v[0], G: v[1], B: v[2], Gray: _Gray, T: _charMap[_Gray] }; // T: 映射灰度字符
                     // _p.vnode = I$CE('span', { style: _styleTemplate(_p) }, Inferno.createTextVNode(_p.T));
                     // _p.vnode = R$CE('span', { style: _styleTemplate(_p) }, _p.T);
                     return _p;
@@ -247,33 +252,30 @@ function onload() {
             toFrameData: function(ctx, callback) {
                 var _canvas = this.$refs.canvas;
                 var _image = ctx.getImageData(0, 0, _canvas.width, _canvas.height);
-                var _pixelDataArray = this.filterChar(_image.data); // _.map(_.chunk(_image.data, 4), ); // 像素数据数组
+                var _frameData = this.filterChar(_image.data); // 像素数据数组
                 var _filter = function(v) {
                     // return I$CE('div', null, _.map(v, 'vnode'));
                     // return R$CE('div', null, _.map(v, 'vnode'));
                     return v;
                 }
-                var _rowDataArray = _.chunk(_pixelDataArray, _image.width);
-                var _rowVNodes = [] || _.map(_rowDataArray, _filter); // 行数据数组 
-                if(callback instanceof Function) callback(_rowDataArray, _rowVNodes);
+                var _rowData = _.chunk(_frameData, _image.width);
+                var _rowVNodes = [] || _.map(_rowData, _filter); // 行数据数组
+                if (callback instanceof Function) callback(_rowData, _rowVNodes);
             },
             // 更新画面
             update: function(frameData, rowVNodes) {
-                var _view = this.$refs.view, _stats = this.stats;
+                var _view = this.$refs.view;
                 // 方法一 行模板渲染(相较方法二兼容更多浏览器,不易发生栈溢出)
                 var _frame = _.map(frameData, this.currRowTempFn).join("<br/>\n");
                 // 方法二 帧模板渲染(效率高但兼容差易超出堆栈上限: Maximum call stack size exceeded)
                 // var _frame = this.currFrameTempFn(frameData);
                 // 方法三 字符模板渲染(效率仅次于方法一,兼容性好);
                 // var _frame = this.renderFrame(frameData);
+                this.content = _frame; // 渲染画面
                 // 方法五 Inferno差异化渲染(当前场景效率低)
                 // Inferno.render(I$CE('div', null, rowVNodes), _view);
                 // 方法六 anujs渲染(TODO)
                 // React.render(R$CE('div', null, rowVNodes), _view);
-                this.content = _frame; // 渲染画面
-                this.$nextTick(function() {
-                    _stats.update(); // 触发性能统计
-                });
             },
             // 初始化统计工具
             initStats: function() {
@@ -285,6 +287,10 @@ function onload() {
             },
 
             // vue事件
+            // 
+            handelResize: function(e) {
+                console.log(e)
+            },
             // fileChange 文件更改时修改视频源
             fileChange: function(e) {
                 var _file = this.$refs.file, _video = this.$refs.video, _image = this.$refs.image;

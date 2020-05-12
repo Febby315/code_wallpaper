@@ -23,7 +23,7 @@
     <!-- <script src="//cdn.jsdelivr.net/npm/anujs@1.6.0/dist/React.min.js"></script> -->
 </head>
 <body>
-    <div id="app" ref="app">
+    <div id="app">
         <div class="box">
             <!-- @canplay="loadedmetadata($event)" -->
             <!-- preload autoplay controls  -->
@@ -36,7 +36,7 @@
         <div id="view" ref="view" v-html="content" :class="viewClass" :style="viewStyle"></div>
         <div ref="tool" class="tool" >
             <input ref="file" type="file" @change="fileChange($event)" hidden>
-            <button type="button" @click="$refs.file.click();">图片/视频</button>
+            <button type="button" @click="$refs.file.click()">图片/视频</button>
             <button type="button" @click="videoPlay($event)">播放/暂停</button>
         </div>
     </div>
