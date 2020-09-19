@@ -3,7 +3,7 @@ $(function(){
     var v_app = window.v_app = new Vue({
         el: "#app",
         data: {
-            src: "video/v2.mp4",
+            src: "video/v.mp4",
             flvsrc: "http://aliyun-flv.yy.com/live/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0-96597708953498332-96597708953498333-2-2748477-33.flv?codec=orig&secret=bec0e1c80fad166895855545ff4efc89&t=1562310185&appid=15013",
             m3u8src: "http://proxy.hls.yy.com/livesystem/15013_xv_22490906_22490906_0_0_0-15013_xa_22490906_22490906_0_0_0.m3u8?org=yyweb&uuid=d8cee895f547417d82b0e297118278c5&t=1547044198&tk=09b38b158a6ba249a511d6e81ff9f189",
             content: null,// 视图html内容

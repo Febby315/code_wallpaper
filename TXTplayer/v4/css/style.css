@@ -2,7 +2,7 @@
     --pic-view-bg: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBvbHlnb24gcG9pbnRzPSIwLDAgMTAsMCAxMCwxMCAyMCwxMCAyMCwyMCAxMCwyMCAxMCwxMCAwLDEwIiBzdHlsZT0iZmlsbDpyZ2JhKDEzOCwxMzgsMTM4LDAuMyk7c3Ryb2tlLXdpZHRoOjAiLz48L3N2Zz4=");
 }
 ::-webkit-scrollbar{ display: none; }
-/*  var(--pic-view-bg) fixed */
+/* background: #000 var(--pic-view-bg) fixed; */
 html{ font-family: monospace; background: #000; }
 html,body,#app{ width: 100%; height: 100%; overflow: hidden; }
 #app{ display: flex; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.35); color: #fff; }
